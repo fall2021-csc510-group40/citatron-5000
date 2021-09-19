@@ -2,15 +2,71 @@ package source
 
 import (
 	"core/schema"
+	"core/util"
 	"errors"
 	"fmt"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
-	"regexp"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
+
+func getAcmWorks(doc *goquery.Document) []*schema.Work {
+	var works []*schema.Work
+
+	doc.Find(".issue-item").Each(func(i int, s *goquery.Selection) {
+		w := &schema.Work{}
+
+		w.Type = strings.ToLower(s.Find(".issue-heading").Text())
+
+		title := s.Find(".hlFld-Title")
+		doi, ok := title.Find("a").Attr("href")
+		if !ok {
+			return
+		}
+
+		w.DOI = strings.TrimPrefix(doi, "/doi/")
+		w.Title = util.CleanString(title.Text())
+		w.Venue = s.Find(".epub-section__title").Text()
+		w.Page = util.ParsePages(s.Find(".issue-item__detail").Find(".dot-separator").Text())
+
+		s.Find(".rlist--inline").Each(func(i int, s *goquery.Selection) {
+			if value, ok := s.Attr("aria-label"); !ok || value != "authors" {
+				return
+			}
+
+			s.Find("a").Each(func(i int, s *goquery.Selection) {
+				author, ok := s.Attr("title")
+				if !ok {
+					return
+				}
+
+				w.Authors = append(w.Authors, util.CleanString(author))
+			})
+		})
+
+		date, ok := s.Find(".bookPubDate").Attr("data-title")
+		if !ok {
+			return
+		}
+
+		day, month, year, err := util.ParseDate(strings.TrimPrefix(date, "Published: "))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		w.Day = day
+		w.Month = month
+		w.Year = year
+
+		works = append(works, w)
+	})
+
+	return works
+}
 
 func SourceSearchACM(w *schema.Work) ([]*schema.Work, error) {
 	jar, err := cookiejar.New(nil)
@@ -38,12 +94,5 @@ func SourceSearchACM(w *schema.Work) ([]*schema.Work, error) {
 		return nil, err
 	}
 
-	doc.Find(".issue-item").Each(func(i int, s *goquery.Selection) {
-		title := s.Find(".hlFld-Title").Text()
-		title = regexp.MustCompile(`\s\s+`).ReplaceAllString(title, " ")
-
-		fmt.Println(title)
-	})
-
-	return nil, nil
+	return getAcmWorks(doc), nil
 }
