@@ -1,7 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"core/schema"
+	"core/source"
+)
 
 func main() {
-	fmt.Println("Hello, world!")
+	var searches []source.Search
+	searches = append(searches, source.SourceSearchACM)
+
+	for _, search := range searches {
+		search(&schema.Work{
+			Title: "test",
+		})
+	}
 }
