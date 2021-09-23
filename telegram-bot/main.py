@@ -1,83 +1,142 @@
 import json
 
-import requests
-from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackQueryHandler, CallbackContext, Filters
+from telegram.ext import Updater, MessageHandler, CallbackQueryHandler, CallbackContext, Filters, ConversationHandler
 from telegram import Update
 import argparse
 import logging
 
+from keyboards import get_choice_keyboard
+from api import APIException, APIAdaptor
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                     level=logging.INFO)
+                    level=logging.INFO)
 
 
-API_URL = "127.0.0.1:8899"
 
+class Bot:
+    CHOOSING, FORMATTING = range(2)
 
-class APIException(Exception):
-    def __init__(self, handle, status_code, error):
-        self.handle = handle
-        self.status_code = status_code
-        self.error = error
+    def __init__(self, config_path):
+        self.config = self._load_config(config_path)
+        self.logger = logging.getLogger("citebot")
+        self.logger.setLevel(self.config["log_level"])
+        self.api = APIAdaptor(self.config["api_url"], self.logger)
 
+    @staticmethod
+    def _load_config(config_path):
+        with open(config_path, "r") as f:
+            return json.load(f)
 
-def handle_errors(handler):
-    def wrapped(update, context):
-        try:
-            handler(update, context)
-        except APIException as e:
-            error_string = f'Call to handle {e.handle} resulted in error, status_code: {e.status_code}'
-            if e.error:
-                error_string = error_string + f", error_text: {e.error}"
-            context.bot.send_message(chat_id=update.effective_chat.id, text=error_string)
+    def handle_errors(handler):
+        def wrapped(self, update, context):
+            try:
+                return handler(self, update, context)
+            except APIException as e:
+                error_string = f'Call to handle {e.handle} resulted in error, status_code: {e.status_code}'
+                if e.error:
+                    error_string = error_string + f", error_text: {e.error}"
+                context.bot.send_message(chat_id=update.effective_chat.id, text=error_string)
+                return ConversationHandler.END
 
-    return wrapped
+        return wrapped
 
+    @handle_errors
+    def search(self, update: Update, context: CallbackContext):
+        title = update.message.text
+        results = self.api.get_search_results(title)
 
-def get_search_results(title):
-    rsp = requests.get(API_URL + "/search", data={
-        "query": {
-            "title": title,
-        },
-    })
+        self.logger.debug(f"Got search results: {results}")
 
-    if not rsp.ok:
-        raise APIException("search", rsp.status_code, rsp.json().get("error", None))
+        if not results:
+            self.logger.debug("No results, stopping conversation")
+            context.bot.send_message(text="No entries were found =(")
+            return ConversationHandler.END
 
-    return rsp.json()["results"]
+        if len(results) == 1:
+            self.logger.info(f"Single results found, using id {results[0]['id']}")
+            context.chat_data["id_to_format"] = results[0]["id"]
+            return self.choose_format(update, context)
 
+        context.chat_data["results"] = results
+        keyboard = get_choice_keyboard([
+            {
+                "text": f'{work["title"]} by {work["authors"]}',
+                "data": work["id"]
+            } for work in results
+        ])
 
-def get_format_results(item_id, format):
-    rsp = requests.get(API_URL + "/format", data={
-        "id": item_id,
-        "format": format,
-    })
+        message_id = context.bot.send_message(text="Please choose the desired work:",
+                                              chat_id=update.effective_chat.id,
+                                              reply_markup=keyboard).message_id
+        self.logger.info(f"Search choice message_id: {message_id}")
+        context.chat_data["search_choice_message_id"] = message_id
+        return self.CHOOSING
 
-    if not rsp.ok:
-        raise APIException("format", rsp.status_code, rsp.json().get("error", None))
+    def choose_format(self, update: Update, context: CallbackContext):
+        self.logger.info("Choosing format")
+        keyboard = get_choice_keyboard([
+            {
+                "text": description,
+                "data": format_name
+            } for format_name, description in self.config["formats"].items()
+        ])
 
-    return rsp.json()["text"]
+        message_id = context.bot.send_message(text="Please choose format:",
+                                              chat_id=update.effective_chat.id,
+                                              reply_markup=keyboard).message_id
+        self.logger.info(f"Format choice message_id: {message_id}")
+        context.chat_data["format_choice_message_id"] = message_id
 
+        return self.FORMATTING
 
-def button(update: Update, context: CallbackContext):
-    query = update.callback_query
-    query.answer()
-    context.bot.send_message(text=str(query.data))
+    def handle_search_choice(self, update: Update, context: CallbackContext):
+        self.logger.info("Handling search choice")
+        query = update.callback_query
+        context.chat_data["id_to_format"] = query.data
 
+        message_id = context.chat_data["search_choice_message_id"]
 
-def start(update, context):
+        context.bot.delete_message(chat_id=update.effective_chat.id,
+                                   message_id=message_id)
 
-    logging.info(f"Request received, chat_id: {update.effective_chat.id}, username: {update.effective_chat.username}")
+        return self.choose_format(update, context)
 
+    @handle_errors
+    def handle_format_choice(self, update: Update, context: CallbackContext):
+        query = update.callback_query
+        context.chat_data["format_name"] = query.data
 
-@handle_errors
-def search(update: Update, context: CallbackContext):
-    title = update.message.text
-    results = get_search_results(title)
-    context.chat_data["state"] = "choose"
-    context.chat_data["results"] = results
+        message_id = context.chat_data["format_choice_message_id"]
 
+        context.bot.delete_message(chat_id=update.effective_chat.id,
+                                   message_id=message_id)
 
+        resulting_text = self.api.get_format_results(context.chat_data["id_to_format"], context.chat_data["format_name"])
+        context.bot.send_message(text=f"```\n{resulting_text}\n```",
+                                 parse_mode="MarkdownV2",
+                                 chat_id=update.effective_chat.id)
+
+        return ConversationHandler.END
+
+    def run(self):
+        updater = Updater(token=self.config["token"])
+        dispatcher = updater.dispatcher
+
+        dispatcher.add_handler(ConversationHandler(
+            entry_points=[MessageHandler(callback=self.search, filters=Filters.text & ~Filters.command)], per_message=False,
+            states={
+                self.CHOOSING: [
+                    CallbackQueryHandler(self.handle_search_choice)
+                ],
+                self.FORMATTING: [
+                    CallbackQueryHandler(self.handle_format_choice)
+                ]
+            },
+            fallbacks=[],
+        ))
+
+        updater.start_polling()
+        updater.idle()
 
 
 def main():
@@ -86,16 +145,8 @@ def main():
 
     args = parser.parse_args()
 
-    with open(args.config[0], "r") as f:
-        config = json.load(f)
-
-    updater = Updater(token=config["token"])
-    dispatcher = updater.dispatcher
-    start_handler = CommandHandler("start", start)
-    dispatcher.add_handler(start_handler)
-    dispatcher.add_handler(CallbackQueryHandler(button))
-
-    updater.start_polling()
+    bot = Bot(args.config[0])
+    bot.run()
 
 
 if __name__ == "__main__":

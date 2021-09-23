@@ -1,5 +1,4 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-import emoji
 
 
 def _get_digit_emoji(number):
@@ -18,6 +17,3 @@ def get_choice_keyboard(choices):
     ])
 
     return keyboard
-
-
-

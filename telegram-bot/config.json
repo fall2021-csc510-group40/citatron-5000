@@ -1,3 +1,9 @@
 {
-  "token": "YOUR_TOKEN"
+  "api_url": "http://localhost:8899",
+  "token": "YOR_TOKEN",
+  "formats": {
+    "bibtex":  "BibTeX",
+    "plaintext": "Plaintext"
+  },
+  "log_level": "INFO"
 }
