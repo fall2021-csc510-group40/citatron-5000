@@ -1,6 +1,6 @@
 {
   "api_url": "http://localhost:8899",
-  "token": "YOR_TOKEN",
+  "token": "YOUR_TOKEN",
   "formats": {
     "bibtex":  "BibTeX",
     "plaintext": "Plaintext"
