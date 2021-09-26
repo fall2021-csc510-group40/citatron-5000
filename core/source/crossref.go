@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-type Response struct {
+type response struct {
 	Status  string `json:"status"`
 	Message struct {
 		Items []struct {
@@ -29,6 +29,7 @@ type Response struct {
 	} `json:"message"`
 }
 
+// SourceSearchCrossRef searches CrossRef for works
 func SourceSearchCrossRef(titleGetter *schema.Work) ([]*schema.Work, error) {
 	var works []*schema.Work
 	var title string = titleGetter.Title
@@ -48,7 +49,7 @@ func SourceSearchCrossRef(titleGetter *schema.Work) ([]*schema.Work, error) {
 		return nil, err
 	}
 
-	var parsed Response
+	var parsed response
 
 	if err := json.Unmarshal(body, &parsed); err != nil {
 		return nil, err

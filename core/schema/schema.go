@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// Work represents a generic work like article, book, etc.
 type Work struct {
 	ID   string `json:"id"`
 	Hash string `json:"hash"`
@@ -33,26 +34,31 @@ type Work struct {
 	Keywords []string `json:"keywords"`
 }
 
+// SearchRequest is the body of a search request
 type SearchRequest struct {
 	Query *Work `json:"query"`
 }
 
+// SearchResponse is the body of a search response
 type SearchResponse struct {
 	Results []*Work `json:"results"`
 	Error   string  `json:"error"`
 }
 
+// FormatRequest is the body of a format request
 type FormatRequest struct {
 	ID     string `json:"id"`
 	Work   *Work  `json:"work"`
 	Format string `json:"format"`
 }
 
+// FormatResponse is the body of a format response
 type FormatResponse struct {
 	Result string `json:"result"`
 	Error  string `json:"error"`
 }
 
+// Normalize normalizes the data for a work and then populates its hash
 func (w *Work) Normalize() error {
 	// Clean strings
 	w.Type = util.CleanString(w.Type)
@@ -101,7 +107,9 @@ func (w *Work) Normalize() error {
 	return nil
 }
 
+// Coalesce merges data with this work and another
 func (w *Work) Coalesce(other *Work) {
+	// Coalesce fields
 	if w.Type == "" {
 		w.Type = other.Type
 	}
@@ -116,10 +124,6 @@ func (w *Work) Coalesce(other *Work) {
 
 	if w.ISBN == "" {
 		w.ISBN = other.ISBN
-	}
-
-	if len(w.Authors) == 0 {
-		w.Authors = other.Authors
 	}
 
 	if w.Version == "" {
@@ -140,5 +144,9 @@ func (w *Work) Coalesce(other *Work) {
 
 	if w.Month == 0 {
 		w.Month = other.Month
+	}
+
+	if w.Year == 0 {
+		w.Year = other.Year
 	}
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+// getAcmWorks parses the raw HTML from an ACM result page
 func getAcmWorks(doc *goquery.Document) []*schema.Work {
 	var works []*schema.Work
 
@@ -68,6 +69,7 @@ func getAcmWorks(doc *goquery.Document) []*schema.Work {
 	return works
 }
 
+// SourceSearchACM searches the ACM digital library for a work
 func SourceSearchACM(w *schema.Work) ([]*schema.Work, error) {
 	jar, err := cookiejar.New(nil)
 	if err != nil {

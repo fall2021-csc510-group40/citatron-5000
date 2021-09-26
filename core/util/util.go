@@ -17,14 +17,17 @@ var yearRegex = regexp.MustCompile(`\b\d{4}\b`)
 var pageRegex = regexp.MustCompile(`\d+-\d+`)
 var numberRegex = regexp.MustCompile(`\d+`)
 
+// CleanString removes all unnecessary whitespace
 func CleanString(s string) string {
 	return duplicateSpaceRegex.ReplaceAllString(strings.TrimSpace(s), " ")
 }
 
+// RemoveAllPunctuation removes all non-alphanumeric characters
 func RemoveAllPunctuation(s string) string {
 	return punctuationRegex.ReplaceAllString(s, "")
 }
 
+// GetMonth returns the month number from string
 func GetMonth(m string) (int, error) {
 	switch strings.ToLower(m) {
 	case "jan", "january":
@@ -56,6 +59,7 @@ func GetMonth(m string) (int, error) {
 	return 0, errors.New("invalid month")
 }
 
+// ParseDate parses a month, day, year string into its parts
 func ParseDate(d string) (int, int, int, error) {
 	day, err := strconv.Atoi(dayRegex.FindString(d))
 	if err != nil || day < 0 || day > 31 {
@@ -75,6 +79,7 @@ func ParseDate(d string) (int, int, int, error) {
 	return day, month, year, nil
 }
 
+// ParsePages parses a page range string into its simplest form
 func ParsePages(s string) string {
 	s = strings.ReplaceAll(s, "–", "-")
 
