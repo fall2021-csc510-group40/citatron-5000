@@ -8,27 +8,6 @@ import (
 	"net/url"
 )
 
-type response struct {
-	Status  string `json:"status"`
-	Message struct {
-		Items []struct {
-			DOI    string   `json:"DOI"`
-			Title  []string `json:"title"`
-			Author []struct {
-				Given  string `json:"given"`
-				Family string `json:"family"`
-			} `json:"author"`
-			EditionNumber string `json:"edition_number"`
-			Publisher     string `json:"publisher"`
-			Created       struct {
-				DateParts [][]int `json:"date-parts"`
-			} `json:"created"`
-			Type string `json:"type"`
-			Page string `json:"page"`
-		} `json:"items"`
-	} `json:"message"`
-}
-
 // SourceSearchCrossRef searches CrossRef for works
 func SourceSearchCrossRef(titleGetter *schema.Work) ([]*schema.Work, error) {
 	var works []*schema.Work
@@ -49,7 +28,26 @@ func SourceSearchCrossRef(titleGetter *schema.Work) ([]*schema.Work, error) {
 		return nil, err
 	}
 
-	var parsed response
+	var parsed struct {
+		Status  string `json:"status"`
+		Message struct {
+			Items []struct {
+				DOI    string   `json:"DOI"`
+				Title  []string `json:"title"`
+				Author []struct {
+					Given  string `json:"given"`
+					Family string `json:"family"`
+				} `json:"author"`
+				EditionNumber string `json:"edition_number"`
+				Publisher     string `json:"publisher"`
+				Created       struct {
+					DateParts [][]int `json:"date-parts"`
+				} `json:"created"`
+				Type string `json:"type"`
+				Page string `json:"page"`
+			} `json:"items"`
+		} `json:"message"`
+	}
 
 	if err := json.Unmarshal(body, &parsed); err != nil {
 		return nil, err

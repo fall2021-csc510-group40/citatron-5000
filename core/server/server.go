@@ -2,6 +2,7 @@ package server
 
 import (
 	"core/db"
+	"core/formatter"
 	"core/schema"
 	"encoding/json"
 	"io/ioutil"
@@ -69,5 +70,42 @@ func (s *Server) search(w http.ResponseWriter, req *http.Request) {
 
 // format handles an HTTP request to format a work into a citation
 func (s *Server) format(w http.ResponseWriter, req *http.Request) {
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
+	var formatRequest schema.FormatRequest
+	if err := json.Unmarshal(body, &formatRequest); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	var formatResponse schema.FormatResponse
+
+	var work *schema.Work
+	if formatRequest.ID == "" {
+		work = formatRequest.Work
+	} else {
+		// TODO: get from database
+	}
+
+	if formatResponse.Error == "" {
+		switch formatRequest.Format {
+		case "bibtex":
+			formatResponse.Result = formatter.BibtexFormat(work)
+		default:
+			formatResponse.Result = formatter.PlaintextFormat(work)
+		}
+	}
+
+	resp, err := json.Marshal(formatResponse)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(resp)
 }
