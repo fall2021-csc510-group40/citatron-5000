@@ -8,6 +8,7 @@ import (
 )
 
 var duplicateSpaceRegex = regexp.MustCompile(`\s\s+`)
+var punctuationRegex = regexp.MustCompile(`[^a-zA-Z\d]`)
 
 var dayRegex = regexp.MustCompile(`\b\d{1,2}\b`)
 var monthRegex = regexp.MustCompile(`\b[a-zA-Z]+\b`)
@@ -18,6 +19,10 @@ var numberRegex = regexp.MustCompile(`\d+`)
 
 func CleanString(s string) string {
 	return duplicateSpaceRegex.ReplaceAllString(strings.TrimSpace(s), " ")
+}
+
+func RemoveAllPunctuation(s string) string {
+	return punctuationRegex.ReplaceAllString(s, "")
 }
 
 func GetMonth(m string) (int, error) {
