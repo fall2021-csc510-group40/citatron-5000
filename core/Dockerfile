@@ -1,7 +1,8 @@
 FROM golang
-COPY / .
-RUN go get -d && go build -ldflags "-w -extldflags -static" -tags netgo -installsuffix netgo -o ./core
+COPY ./ /core
+WORKDIR /core
+RUN go build -ldflags "-w -extldflags -static" -tags netgo -installsuffix netgo -o ./core
 
 FROM scratch
-COPY --from=0 /go/core .
+COPY --from=0 /core/core .
 ENTRYPOINT [ "./core" ]
