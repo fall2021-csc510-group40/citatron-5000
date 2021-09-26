@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -82,6 +83,10 @@ func (w *Work) Normalize() error {
 	if w.Year == 0 {
 		return errors.New("no year")
 	}
+
+	// Alphabetize authors and keywords
+	sort.Strings(w.Authors)
+	sort.Strings(w.Keywords)
 
 	// Calculate hash
 	h := sha256.New()
