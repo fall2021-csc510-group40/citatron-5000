@@ -53,6 +53,7 @@ class Bot:
                 "data": work["id"]
             } for work in results[offset:offset + Bot.SEARCH_PAGE_SIZE]
         ], add_next_page=has_next_page)
+        self.logger.debug(f"Sending keyboard: {keyboard.inline_keyboard}")
 
         context.bot.send_message(text="Please choose the desired work:",
                                  chat_id=update.effective_chat.id,
@@ -67,7 +68,8 @@ class Bot:
 
         if not results:
             self.logger.debug("No results, stopping conversation")
-            context.bot.send_message(text="No entries were found =(")
+            context.bot.send_message(text="No entries were found =(",
+                                     chat_id=update.effective_chat.id)
             return ConversationHandler.END
 
         if len(results) == 1:

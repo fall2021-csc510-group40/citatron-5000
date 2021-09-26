@@ -11,7 +11,7 @@ import (
 
 // Work represents a generic work like article, book, etc.
 type Work struct {
-	ID   string `json:"id"`
+	ID   string `json:"id" bson:"_id"`
 	Hash string `json:"hash"`
 
 	Type string `json:"type"`

@@ -20,7 +20,7 @@ type Server struct {
 // New creates a new citation server
 func New() *Server {
 	server := &Server{}
-	server.DB = db.New()
+	server.DB, _ = db.New("mongodb://root:example@mongo:27017")
 	return server
 }
 

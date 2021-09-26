@@ -23,11 +23,16 @@ class APIAdaptor:
         #     } for i in range(9)
         # ]
 
-        rsp = requests.get(self.api_url + "/search", json={
+        request_data = {
             "query": {
                 "title": title,
             },
-        })
+        }
+
+        self.logger.debug(f"Sending search request: {request_data}")
+
+        rsp = requests.get(self.api_url + "/search", json=request_data)
+        self.logger.debug(f"Response: {rsp.json()}")
 
         if not rsp.ok:
             raise APIException("search", rsp.status_code, rsp.json().get("error", None))
