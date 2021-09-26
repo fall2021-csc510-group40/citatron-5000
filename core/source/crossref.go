@@ -3,7 +3,6 @@ package source
 import (
 	"core/schema"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -41,22 +40,20 @@ func SourceSearchCrossRef(titleGetter *schema.Work) ([]*schema.Work, error) {
 
 	resp, err := http.Get("http://api.crossref.org/works?" + query.Encode())
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-
-	fmt.Println(string(body))
 
 	var parsed Response
 
 	if err := json.Unmarshal(body, &parsed); err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	for _, i := range parsed.Message.Items {
