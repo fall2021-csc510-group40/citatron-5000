@@ -12,9 +12,23 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 
+def handle_errors(handler):
+    def wrapped(self, update, context):
+        try:
+            return handler(self, update, context)
+        except APIException as e:
+            error_string = f'Call to handle {e.handle} resulted in error, status_code: {e.status_code}'
+            if e.error:
+                error_string = error_string + f", error_text: {e.error}"
+            context.bot.send_message(chat_id=update.effective_chat.id, text=error_string)
+            return ConversationHandler.END
+
+    return wrapped
+
 
 class Bot:
     CHOOSING, FORMATTING = range(2)
+    SEARCH_PAGE_SIZE = 5
 
     def __init__(self, config_path):
         self.config = self._load_config(config_path)
@@ -27,18 +41,22 @@ class Bot:
         with open(config_path, "r") as f:
             return json.load(f)
 
-    def handle_errors(handler):
-        def wrapped(self, update, context):
-            try:
-                return handler(self, update, context)
-            except APIException as e:
-                error_string = f'Call to handle {e.handle} resulted in error, status_code: {e.status_code}'
-                if e.error:
-                    error_string = error_string + f", error_text: {e.error}"
-                context.bot.send_message(chat_id=update.effective_chat.id, text=error_string)
-                return ConversationHandler.END
+    def _request_search_choice(self, update, context):
+        results = context.chat_data["results"]
+        offset = context.chat_data["results_offset"]
+        assert offset < len(results)
 
-        return wrapped
+        has_next_page = len(results) - offset > Bot.SEARCH_PAGE_SIZE
+        keyboard = get_choice_keyboard([
+            {
+                "text": f'{work["title"]} by {work["authors"]}',
+                "data": work["id"]
+            } for work in results[offset:offset + Bot.SEARCH_PAGE_SIZE]
+        ], add_next_page=has_next_page)
+
+        context.bot.send_message(text="Please choose the desired work:",
+                                 chat_id=update.effective_chat.id,
+                                 reply_markup=keyboard)
 
     @handle_errors
     def search(self, update: Update, context: CallbackContext):
@@ -58,19 +76,9 @@ class Bot:
             return self.choose_format(update, context)
 
         context.chat_data["results"] = results
-        keyboard = get_choice_keyboard([
-            {
-                "text": f'{work["title"]} by {work["authors"]}',
-                "data": work["id"]
-            } for work in results
-        ])
-
-        message_id = context.bot.send_message(text="Please choose the desired work:",
-                                              chat_id=update.effective_chat.id,
-                                              reply_markup=keyboard).message_id
-        self.logger.info(f"Search choice message_id: {message_id}")
-        context.chat_data["search_choice_message_id"] = message_id
-        return self.CHOOSING
+        context.chat_data["results_offset"] = 0
+        self._request_search_choice(update, context)
+        return Bot.CHOOSING
 
     def choose_format(self, update: Update, context: CallbackContext):
         self.logger.info("Choosing format")
@@ -81,37 +89,41 @@ class Bot:
             } for format_name, description in self.config["formats"].items()
         ])
 
-        message_id = context.bot.send_message(text="Please choose format:",
-                                              chat_id=update.effective_chat.id,
-                                              reply_markup=keyboard).message_id
-        self.logger.info(f"Format choice message_id: {message_id}")
-        context.chat_data["format_choice_message_id"] = message_id
+        context.bot.send_message(text="Please choose format:",
+                                 chat_id=update.effective_chat.id,
+                                 reply_markup=keyboard)
 
-        return self.FORMATTING
+        return Bot.FORMATTING
 
     def handle_search_choice(self, update: Update, context: CallbackContext):
         self.logger.info("Handling search choice")
         query = update.callback_query
-        context.chat_data["id_to_format"] = query.data
-
-        message_id = context.chat_data["search_choice_message_id"]
 
         context.bot.delete_message(chat_id=update.effective_chat.id,
-                                   message_id=message_id)
+                                   message_id=update.effective_message.message_id)
 
-        return self.choose_format(update, context)
+        if query.data == "cancel":
+            context.bot.send_message(text="Search canceled",
+                                     chat_id=update.effective_chat.id)
+            return ConversationHandler.END
+        elif query.data == "next_page":
+            context.chat_data["results_offset"] += Bot.SEARCH_PAGE_SIZE
+            self._request_search_choice(update, context)
+            return Bot.CHOOSING
+        else:
+            context.chat_data["id_to_format"] = query.data
+            return self.choose_format(update, context)
 
     @handle_errors
     def handle_format_choice(self, update: Update, context: CallbackContext):
         query = update.callback_query
         context.chat_data["format_name"] = query.data
 
-        message_id = context.chat_data["format_choice_message_id"]
-
         context.bot.delete_message(chat_id=update.effective_chat.id,
-                                   message_id=message_id)
+                                   message_id=update.effective_message.message_id)
 
-        resulting_text = self.api.get_format_results(context.chat_data["id_to_format"], context.chat_data["format_name"])
+        resulting_text = self.api.get_format_results(context.chat_data["id_to_format"],
+                                                     context.chat_data["format_name"])
         context.bot.send_message(text=f"```\n{resulting_text}\n```",
                                  parse_mode="MarkdownV2",
                                  chat_id=update.effective_chat.id)
@@ -123,12 +135,13 @@ class Bot:
         dispatcher = updater.dispatcher
 
         dispatcher.add_handler(ConversationHandler(
-            entry_points=[MessageHandler(callback=self.search, filters=Filters.text & ~Filters.command)], per_message=False,
+            entry_points=[MessageHandler(callback=self.search, filters=Filters.text & ~Filters.command)],
+            per_message=False,
             states={
-                self.CHOOSING: [
+                Bot.CHOOSING: [
                     CallbackQueryHandler(self.handle_search_choice)
                 ],
-                self.FORMATTING: [
+                Bot.FORMATTING: [
                     CallbackQueryHandler(self.handle_format_choice)
                 ]
             },
