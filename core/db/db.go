@@ -79,7 +79,7 @@ func (d *Database) Search(work *schema.Work) ([]*schema.Work, error) {
 		return workToDistance[works[i]] < workToDistance[works[j]]
 	})
 
-	// Limit baesd on similarity threshold
+	// Limit based on similarity threshold
 	i := 0
 	for ; i < len(works); i++ {
 		if workToDistance[works[i]] > SimliartyThreshold {
