@@ -5,7 +5,7 @@ import (
 	"core/source"
 )
 
-var searches = [...]source.Search{source.SourceSearchACM}
+var searches = [...]source.Search{source.SourceSearchACM, source.SourceSearchCrossRef}
 
 type Database struct {
 }
