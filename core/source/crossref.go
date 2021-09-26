@@ -20,11 +20,9 @@ type Response struct {
 			} `json:"author"`
 			EditionNumber string `json:"edition_number"`
 			Publisher     string `json:"publisher"`
-			Event         struct {
-				Start struct {
-					DateParts [][]int `json:"date-parts"`
-				} `json:"start"`
-			} `json:"event"`
+			Created       struct {
+				DateParts [][]int `json:"date-parts"`
+			} `json:"created"`
 			Type string `json:"type"`
 			Page string `json:"page"`
 		} `json:"items"`
@@ -70,10 +68,10 @@ func SourceSearchCrossRef(titleGetter *schema.Work) ([]*schema.Work, error) {
 		}
 		w.Version = i.EditionNumber
 		w.Venue = i.Publisher
-		if len(i.Event.Start.DateParts) > 0 {
-			w.Year = i.Event.Start.DateParts[0][0]
-			w.Month = i.Event.Start.DateParts[0][1]
-			w.Day = i.Event.Start.DateParts[0][2]
+		if len(i.Created.DateParts) > 0 {
+			w.Year = i.Created.DateParts[0][0]
+			w.Month = i.Created.DateParts[0][1]
+			w.Day = i.Created.DateParts[0][2]
 		} else {
 			w.Year = 0
 			w.Month = 0
