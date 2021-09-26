@@ -5,7 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"sort"
 	"strings"
 )
@@ -80,19 +79,18 @@ func (w *Work) Normalize() error {
 		return errors.New("no title")
 	}
 
-	if w.Year == 0 {
-		return errors.New("no year")
+	if len(w.Authors) == 0 {
+		return errors.New("no author")
 	}
 
 	// Alphabetize authors and keywords
-	sort.Strings(w.Authors)
 	sort.Strings(w.Keywords)
 
 	// Calculate hash
 	h := sha256.New()
 
 	var data []string
-	data = append(data, fmt.Sprintf("%d", w.Year))
+	data = append(data, util.RemoveAllPunctuation(strings.ToLower(w.Authors[0])))
 	data = append(data, util.RemoveAllPunctuation(strings.ToLower(w.Title)))
 
 	for _, d := range data {
