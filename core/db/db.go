@@ -25,7 +25,7 @@ func (d *Database) Search(work *schema.Work) ([]*schema.Work, error) {
 
 		for _, w := range works {
 			if err := w.Normalize(); err != nil {
-				return nil, err
+				continue
 			}
 
 			if v, ok := uniqueWorks[w.Hash]; ok {
