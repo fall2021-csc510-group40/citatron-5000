@@ -32,9 +32,9 @@ type Response struct {
 	} `json:"message"`
 }
 
-func SourceSearchCrossRef(title string) []*schema.Work {
+func SourceSearchCrossRef(titleGetter *schema.Work) ([]*schema.Work, error) {
 	var works []*schema.Work
-
+	var title string = titleGetter.Title
 	query := url.Values{}
 	query.Add("query.bibliographic", title)
 	query.Add("rows", "5")
@@ -88,6 +88,6 @@ func SourceSearchCrossRef(title string) []*schema.Work {
 		works = append(works, w)
 	}
 
-	return works
+	return works, nil
 
 }
