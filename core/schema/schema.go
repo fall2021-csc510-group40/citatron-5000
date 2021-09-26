@@ -11,47 +11,47 @@ import (
 )
 
 type Work struct {
-	ID   string
-	Hash string
+	ID   string `json:"id"`
+	Hash string `json:"hash"`
 
-	Type string
+	Type string `json:"type"`
 
-	DOI   string
-	Arxiv string
-	ISBN  string
+	DOI   string `json:"doi"`
+	Arxiv string `json:"arxiv"`
+	ISBN  string `json:"isbn"`
 
-	Title   string
-	Authors []string
+	Title   string   `json:"title"`
+	Authors []string `json:"authors"`
 
-	Version string
-	Venue   string
-	Page    string
+	Version string `json:"version"`
+	Venue   string `json:"venue"`
+	Page    string `json:"page"`
 
-	Year  int
-	Month int
-	Day   int
+	Year  int `json:"year"`
+	Month int `json:"month"`
+	Day   int `json:"day"`
 
-	Keywords []string
+	Keywords []string `json:"keywords"`
 }
 
 type SearchRequest struct {
-	Query *Work
+	Query *Work `json:"query"`
 }
 
 type SearchResponse struct {
-	Results []*Work
-	Error   string
+	Results []*Work `json:"results"`
+	Error   string  `json:"error"`
 }
 
 type FormatRequest struct {
-	ID     string
-	Work   *Work
-	Format string
+	ID     string `json:"id"`
+	Work   *Work  `json:"work"`
+	Format string `json:"format"`
 }
 
 type FormatResponse struct {
-	Result string
-	Error  string
+	Result string `json:"result"`
+	Error  string `json:"error"`
 }
 
 func (w *Work) Normalize() error {

@@ -25,6 +25,11 @@ func (s *Server) ListenAndServe(addr string) error {
 }
 
 func (s *Server) search(w http.ResponseWriter, req *http.Request) {
+	if req.Method != "POST" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
