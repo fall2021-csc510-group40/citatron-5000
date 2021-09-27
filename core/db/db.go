@@ -130,6 +130,7 @@ func (d *Database) SearchSources(work *schema.Work) ([]*schema.Work, error) {
 
 			works, err := s(work)
 			if err != nil {
+				log.Printf("Error from source: %v", err)
 				return
 			}
 
