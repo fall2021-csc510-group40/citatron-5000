@@ -11,7 +11,7 @@ func BibtexFormat(work *schema.Work) string {
 	citation := "@article{ YOUR_KEY_HERE,\n"
 
 	if len(work.Authors) > 0 {
-		citation += "Author= { "
+		citation += "    Author= { "
 		for i := 0; i < len(work.Authors)-1; i++ {
 			citation += work.Authors[i] + ", "
 		}
@@ -20,34 +20,34 @@ func BibtexFormat(work *schema.Work) string {
 	}
 
 	if len(work.Title) > 0 {
-		citation += "Title= { " + work.Title + " },\n"
+		citation += "    Title= { " + work.Title + " },\n"
 	}
 
 	if len(work.DOI) > 0 {
-		citation += "DOI= { " + work.DOI + " },\n"
+		citation += "    DOI= { " + work.DOI + " },\n"
 	}
 
 	if len(work.Arxiv) > 0 {
-		citation += "ARXIV= { " + work.Arxiv + " },\n"
+		citation += "    ARXIV= { " + work.Arxiv + " },\n"
 	}
 
 	if len(work.ISBN) > 0 {
-		citation += "ISBN= { " + work.Arxiv + " },\n"
+		citation += "    ISBN= { " + work.Arxiv + " },\n"
 	}
 
 	if len(work.Venue) > 0 {
-		citation += "Journal= { " + work.Venue + " },\n"
+		citation += "    Journal= { " + work.Venue + " },\n"
 	}
 	if work.Month != 0 {
-		citation += "Month= { " + strconv.Itoa(work.Month) + " }, \n"
+		citation += "    Month= { " + strconv.Itoa(work.Month) + " }, \n"
 	}
 
 	if work.Year != 0 {
-		citation += "Year= { " + strconv.Itoa(work.Year) + " }, \n"
+		citation += "    Year= { " + strconv.Itoa(work.Year) + " }, \n"
 	}
 
 	if work.Page != "" {
-		citation += "Page= { " + work.Page + " }, \n"
+		citation += "    Page= { " + work.Page + " }, \n"
 	}
 
 	citation += "},\n"
