@@ -87,11 +87,9 @@ func (s *Server) format(w http.ResponseWriter, req *http.Request) {
 
 	var formatResponse schema.FormatResponse
 
-	var work *schema.Work
-	if formatRequest.ID == "" {
-		work = formatRequest.Work
-	} else {
-		work, err = s.DB.GetWorkById(formatRequest.ID)
+	work := formatRequest.Work
+	if work.ID != "" {
+		work, err = s.DB.GetWorkById(work.ID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			log.Printf("Cannot get work by id: %v", err)

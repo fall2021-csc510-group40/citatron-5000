@@ -47,7 +47,6 @@ type SearchResponse struct {
 
 // FormatRequest is the body of a format request
 type FormatRequest struct {
-	ID     string `json:"id"`
 	Work   *Work  `json:"work"`
 	Format string `json:"format"`
 }
