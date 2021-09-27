@@ -44,7 +44,9 @@ class APIAdaptor:
         # return f"Your {work_id} formatted to {format}"
 
         rsp = requests.get(self.api_url + "/format", json={
-            "id": work_id,
+            "work": {
+                "id": work_id,
+            },
             "format": format,
         })
 
