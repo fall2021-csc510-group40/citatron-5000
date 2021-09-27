@@ -89,9 +89,5 @@ func ParsePages(s string) string {
 	}
 
 	split := strings.Split(s, "pp")
-	if len(split) != 2 {
-		return ""
-	}
-
-	return numberRegex.FindString(split[1])
+	return numberRegex.FindString(split[len(split)-1])
 }

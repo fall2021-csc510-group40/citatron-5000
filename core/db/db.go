@@ -135,4 +135,3 @@ func (d *Database) Search(work *schema.Work) ([]*schema.Work, error) {
 
 	return works[0:i], nil
 }
-
