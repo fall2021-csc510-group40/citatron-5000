@@ -56,6 +56,7 @@ func SourceSearchCrossRef(titleGetter *schema.Work) ([]*schema.Work, error) {
 	for _, i := range parsed.Message.Items {
 		w := &schema.Work{}
 		w.DOI = i.DOI
+
 		if len(i.Title) > 0 {
 			w.Title = i.Title[0]
 		} else {
@@ -65,9 +66,11 @@ func SourceSearchCrossRef(titleGetter *schema.Work) ([]*schema.Work, error) {
 		for _, j := range i.Author {
 			w.Authors = append(w.Authors, (j.Given + " " + j.Family))
 		}
+
 		w.Version = i.EditionNumber
 		w.Venue = i.Publisher
-		if len(i.Created.DateParts) > 0 {
+
+		if len(i.Created.DateParts) > 0 && len(i.Created.DateParts[0]) > 2 {
 			w.Year = i.Created.DateParts[0][0]
 			w.Month = i.Created.DateParts[0][1]
 			w.Day = i.Created.DateParts[0][2]
