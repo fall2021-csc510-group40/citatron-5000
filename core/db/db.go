@@ -14,16 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func convertToDoc(v interface{}) (doc *bson.D, err error) {
-	data, err := bson.Marshal(v)
-	if err != nil {
-		return
-	}
-
-	err = bson.Unmarshal(data, &doc)
-	return
-}
-
 var searches = [...]source.Search{source.SourceSearchACM, source.SourceSearchCrossRef}
 
 // Database represents a generic database instance for works
@@ -59,6 +49,16 @@ func (d *Database) ExactSearch(work *schema.Work) (res []*schema.Work, err error
 		return
 	}
 
+	return
+}
+
+func convertToDoc(v interface{}) (doc *bson.D, err error) {
+	data, err := bson.Marshal(v)
+	if err != nil {
+		return
+	}
+
+	err = bson.Unmarshal(data, &doc)
 	return
 }
 
@@ -135,5 +135,15 @@ func (d *Database) SearchSources(work *schema.Work) ([]*schema.Work, error) {
 	}
 
 	wg.Wait()
-	return uniqueWorks, nil
+
+	var works []*schema.Work
+	for _, w := range uniqueWorks {
+		works = append(works, w)
+	}
+
+	return works, nil
+}
+
+func (d *Database) Search(work *schema.Work) ([]*schema.Work, error) {
+	return nil, nil
 }
