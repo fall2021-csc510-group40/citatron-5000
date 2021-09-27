@@ -1,4 +1,13 @@
+language: go
 go:
-  - 1.17.*
+  - 1.3.1
+
+env:
+  global:
+    - PATH=$HOME/gopath/bin:$PATH
+
+install:
+  - go get https://github.com/fall2021-csc510-group40/Project-1/core
+
 script:
-  - go test -v ./core/util/util_test.go
+   - go test -v ./...
