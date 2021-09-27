@@ -6,73 +6,85 @@ import (
 	"strings"
 )
 
-func BibtexFormat(paper *schema.Work) string {
-	var citation string = "@article{ \n" //need to add the key
+// BibtexFormat formats a work in Bibtex style
+func BibtexFormat(work *schema.Work) string {
+	var citation string = "@article{ \n"
 
-	if len(paper.Authors) > 0 {
+	citation += "Key= { YOUR_KEY_HERE },\n"
+
+	if len(work.Authors) > 0 {
 		citation += "Author= { "
-		for i := 0; i < len(paper.Authors)-1; i++ {
-			citation += paper.Authors[i] + ", "
+		for i := 0; i < len(work.Authors)-1; i++ {
+			citation += work.Authors[i] + ", "
 		}
-		citation += paper.Authors[len(paper.Authors)-1]
+		citation += work.Authors[len(work.Authors)-1]
 		citation += " },\n"
 	}
 
-	if len(paper.Title) > 0 {
-		citation += "Title= { " + paper.Title + " },\n"
+	if len(work.Title) > 0 {
+		citation += "Title= { " + work.Title + " },\n"
 	}
 
-	if len(paper.DOI) > 0 {
-		citation += "DOI= { " + paper.DOI + " },\n"
+	if len(work.DOI) > 0 {
+		citation += "DOI= { " + work.DOI + " },\n"
 	}
 
-	if len(paper.Arxiv) > 0 {
-		citation += "ARXIV= { " + paper.Arxiv + " },\n"
-	}
-	if len(paper.ISBN) > 0 {
-		citation += "ISBN= { " + paper.Arxiv + " },\n"
+	if len(work.Arxiv) > 0 {
+		citation += "ARXIV= { " + work.Arxiv + " },\n"
 	}
 
-	if len(paper.Venue) > 0 {
-		citation += "Journal= { " + paper.Venue + " },\n"
-	}
-	if paper.Month != 0 {
-		citation += "Month= { " + strconv.Itoa(paper.Month) + " }, \n"
+	if len(work.ISBN) > 0 {
+		citation += "ISBN= { " + work.Arxiv + " },\n"
 	}
 
-	if paper.Year != 0 {
-		citation += "Year= { " + strconv.Itoa(paper.Year) + " }, \n"
+	if len(work.Venue) > 0 {
+		citation += "Journal= { " + work.Venue + " },\n"
+	}
+	if work.Month != 0 {
+		citation += "Month= { " + strconv.Itoa(work.Month) + " }, \n"
 	}
 
-	if paper.Page != "" {
-		citation += "Page= { " + paper.Page + " }, \n"
+	if work.Year != 0 {
+		citation += "Year= { " + strconv.Itoa(work.Year) + " }, \n"
 	}
+
+	if work.Page != "" {
+		citation += "Page= { " + work.Page + " }, \n"
+	}
+
 	citation += "},\n"
 	return citation
 }
 
-func PlaintextFormat(paper *schema.Work) string {
-	var citation string = ""
-	if len(paper.Title) > 0 {
-		citation += paper.Title + ", "
+// PlaintextFormat formats a work in a simple plaintext format
+func PlaintextFormat(work *schema.Work) string {
+	var citation string
+
+	if len(work.Title) > 0 {
+		citation += work.Title + ", "
 	}
-	if len(paper.Authors) > 0 {
-		for _, author := range paper.Authors {
+
+	if len(work.Authors) > 0 {
+		for _, author := range work.Authors {
 			citation += author + ", "
 		}
 	}
 
-	if len(paper.Venue) > 0 {
-		citation += paper.Venue + ", "
+	if len(work.Venue) > 0 {
+		citation += work.Venue + ", "
 	}
-	if paper.Month != 0 {
-		citation += strconv.Itoa(paper.Month) + ", "
+
+	if work.Month != 0 {
+		citation += strconv.Itoa(work.Month) + ", "
 	}
-	if paper.Year != 0 {
-		citation += strconv.Itoa(paper.Year) + ","
+
+	if work.Year != 0 {
+		citation += strconv.Itoa(work.Year) + ","
 	}
+
 	citation = strings.TrimSpace(citation)
 	citation = strings.TrimSuffix(citation, ",")
 	citation += "."
+
 	return citation
 }
