@@ -6,18 +6,23 @@ import (
 	"core/source"
 	"core/util"
 	"log"
-	"sort"
 	"strings"
 	"sync"
 
-	"github.com/agnivade/levenshtein"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// SimilarityThreshold is the max string distance for a search result from the target
-const SimliartyThreshold = 10
+func convertToDoc(v interface{}) (doc *bson.D, err error) {
+	data, err := bson.Marshal(v)
+	if err != nil {
+		return
+	}
+
+	err = bson.Unmarshal(data, &doc)
+	return
+}
 
 var searches = [...]source.Search{source.SourceSearchACM, source.SourceSearchCrossRef}
 
@@ -37,7 +42,27 @@ func New(uri string) (*Database, error) {
 	}, nil
 }
 
-func (d *Database) SearchDatabase(work *schema.Work) ([]*schema.Work, error) {
+func (d *Database) ExactSearch(work *schema.Work) (res []*schema.Work, err error) {
+	coll := d.Collection("works")
+	query, err := convertToDoc(work)
+	if err != nil {
+		return
+	}
+
+	cur, err := coll.Find(context.Background(), query)
+	if err != nil {
+		return
+	}
+
+	err = cur.All(context.Background(), &res)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (d *Database) TextSearch(work *schema.Work) ([]*schema.Work, error) {
 	collection := d.Collection("works")
 	query := bson.M{
 		"$text": bson.M{
@@ -71,8 +96,7 @@ func (d *Database) SearchDatabase(work *schema.Work) ([]*schema.Work, error) {
 }
 
 // Search searches the database or search sources for a given work
-func (d *Database) Search(work *schema.Work) ([]*schema.Work, error) {
-	return d.SearchDatabase(work)
+func (d *Database) SearchSources(work *schema.Work) ([]*schema.Work, error) {
 	// Normalize search data
 	work.Title = strings.ToLower(util.CleanString(work.Title))
 
@@ -111,27 +135,5 @@ func (d *Database) Search(work *schema.Work) ([]*schema.Work, error) {
 	}
 
 	wg.Wait()
-
-	// Sort works based on title string distance
-	var works []*schema.Work
-	workToDistance := map[*schema.Work]int{}
-
-	for _, w := range uniqueWorks {
-		works = append(works, w)
-		workToDistance[w] = levenshtein.ComputeDistance(work.Title, strings.ToLower(w.Title))
-	}
-
-	sort.Slice(works, func(i, j int) bool {
-		return workToDistance[works[i]] < workToDistance[works[j]]
-	})
-
-	// Limit based on similarity threshold
-	i := 0
-	for ; i < len(works); i++ {
-		if workToDistance[works[i]] > SimliartyThreshold {
-			break
-		}
-	}
-
-	return works[0:i], nil
+	return uniqueWorks, nil
 }
