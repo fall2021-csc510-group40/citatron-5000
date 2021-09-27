@@ -15,13 +15,6 @@ class APIAdaptor:
 
     def get_search_results(self, title):
         self.logger.debug(f"Searching for '{title}'")
-        # return [
-        #     {
-        #         "id": f"id{i}",
-        #         "title": "Oasdllksa jflkjdflksa jdlkf halksdjsd lkfjaskdhflka jsdhfkalsd;flkja lsjdhf asdjlf",
-        #         "authors": "Zhoka et al.",
-        #     } for i in range(9)
-        # ]
 
         request_data = {
             "query": {
@@ -41,7 +34,6 @@ class APIAdaptor:
 
     def get_format_results(self, work_id, format):
         self.logger.debug(f"Formatting {work_id} to {format}")
-        # return f"Your {work_id} formatted to {format}"
 
         rsp = requests.get(self.api_url + "/format", json={
             "work": {
