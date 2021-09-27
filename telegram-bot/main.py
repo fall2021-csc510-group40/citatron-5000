@@ -49,7 +49,7 @@ class Bot:
         has_next_page = len(results) - offset > Bot.SEARCH_PAGE_SIZE
         keyboard = get_choice_keyboard([
             {
-                "text": f'{work["title"]} by {work["authors"]}',
+                "text": f'{work["title"]} by {", ".join(work["authors"])}',
                 "data": work["id"]
             } for work in results[offset:offset + Bot.SEARCH_PAGE_SIZE]
         ], add_next_page=has_next_page)

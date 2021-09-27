@@ -51,4 +51,4 @@ class APIAdaptor:
         if not rsp.ok:
             raise APIException("format", rsp.status_code, rsp.json().get("error", None))
 
-        return rsp.json()["text"]
+        return rsp.json()["result"]

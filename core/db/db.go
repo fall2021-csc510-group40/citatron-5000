@@ -178,27 +178,95 @@ func (d *Database) getWorksByHashes(h []string) (works []*schema.Work, err error
 	return
 }
 
-func (d *Database) Search(work *schema.Work) (w []*schema.Work, err error) {
-	w, err = d.ExactSearch(work)
+func (d *Database) rewriteMultipleWorks(works []*schema.Work) error {
+	var models []mongo.WriteModel
+
+	for _, w := range works {
+		doc, err := convertToDoc(w)
+		if err != nil {
+			return err
+		}
+
+		m := doc.Map()
+		delete(m, "_id")
+		update := bson.M {
+			"$set": m,
+		}
+
+		model := mongo.
+			NewUpdateOneModel().
+			SetUpdate(update).
+			SetFilter(bson.M {
+				"hash": w.Hash,
+			}).
+			SetUpsert(true)
+
+		models = append(models, model)
+	}
+
+	log.Printf("Bulk write models: %v", models)
+
+	coll := d.Collection("works")
+	_, err := coll.BulkWrite(context.Background(), models)
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *Database) Search(work *schema.Work) (works []*schema.Work, err error) {
+	works, err = d.ExactSearch(work)
+	if err != nil || len(works) == 0 {
 		log.Printf("Exact search failed: %v", err)
 	} else {
 		return
 	}
 
 	candidates, err := d.SearchSources(work)
-	var candidateByHash map[string]*schema.Work
-	if err != nil {
+	if err != nil || len(candidates) == 0 {
 		log.Printf("Sources search failed: %v", err)
 	} else {
+		log.Printf("Found %v candidates from the sources", len(candidates))
+		var hashes []string
+		candidateByHash := make(map[string]*schema.Work)
 		for _, c := range candidates {
 			err = c.Normalize()
 			if err != nil {
 				return
 			}
-			candidateByHash[c.Hash] = c
+			if other, ok := candidateByHash[c.Hash]; ok {
+				other.Coalesce(c)
+			} else {
+				candidateByHash[c.Hash] = c
+			}
+			hashes = append(hashes, c.Hash)
+		}
+
+		dbCandidates, err := d.getWorksByHashes(hashes)
+		if err != nil {
+			return nil, err
+		}
+
+		log.Printf("Got %v matches in the database", len(dbCandidates))
+
+		for _, dbCandidate := range dbCandidates {
+			sourceCandidate := candidateByHash[dbCandidate.Hash]
+			dbCandidate.Coalesce(sourceCandidate)
+			candidateByHash[dbCandidate.Hash] = dbCandidate
+		}
+
+		var worksToWrite []*schema.Work
+		for _, w := range candidateByHash {
+			worksToWrite = append(worksToWrite, w)
+		}
+
+		log.Printf("Writing candidates to database")
+		err = d.rewriteMultipleWorks(worksToWrite)
+		if err != nil {
+			log.Printf("Unable to write candidates to the database: %v", err)
+			return nil, err
 		}
 	}
 
-	return
+	return d.TextSearch(work)
 }
