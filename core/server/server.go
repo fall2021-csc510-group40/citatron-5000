@@ -6,6 +6,7 @@ import (
 	"core/schema"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -73,12 +74,14 @@ func (s *Server) format(w http.ResponseWriter, req *http.Request) {
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Error while reading format request body: %v", err)
 		return
 	}
 
 	var formatRequest schema.FormatRequest
 	if err := json.Unmarshal(body, &formatRequest); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("Error while parsing format request body: %v", err)
 		return
 	}
 
@@ -88,7 +91,12 @@ func (s *Server) format(w http.ResponseWriter, req *http.Request) {
 	if formatRequest.ID == "" {
 		work = formatRequest.Work
 	} else {
-		// TODO: get from database
+		work, err = s.DB.GetWorkById(formatRequest.ID)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			log.Printf("Cannot get work by id: %v", err)
+			return
+		}
 	}
 
 	if formatResponse.Error == "" {

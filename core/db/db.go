@@ -5,6 +5,7 @@ import (
 	"core/schema"
 	"core/source"
 	"core/util"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"strings"
 	"sync"
@@ -52,6 +53,23 @@ func (d *Database) ExactSearch(work *schema.Work) (res []*schema.Work, err error
 	return
 }
 
+func (d *Database) GetWorkById(idString string) (w *schema.Work, err error) {
+	coll := d.Collection("works")
+	id, err := primitive.ObjectIDFromHex(idString)
+	if err != nil {
+		return
+	}
+
+	query := bson.M{
+		"_id": id,
+	}
+
+	res := coll.FindOne(context.Background(), query)
+	w = &schema.Work{}
+	err = res.Decode(w)
+	return
+}
+
 func convertToDoc(v interface{}) (doc *bson.D, err error) {
 	data, err := bson.Marshal(v)
 	if err != nil {
@@ -72,7 +90,6 @@ func (d *Database) TextSearch(work *schema.Work) ([]*schema.Work, error) {
 
 	var results []*schema.Work
 
-	log.Printf("Searching for %s", work.Title)
 	cur, err := collection.Find(context.Background(), query, &options.FindOptions{
 		Sort: bson.M{
 			"score": bson.M{
@@ -95,7 +112,7 @@ func (d *Database) TextSearch(work *schema.Work) ([]*schema.Work, error) {
 	return results, nil
 }
 
-// Search searches the database or search sources for a given work
+// SearchSources searches the database or search sources for a given work
 func (d *Database) SearchSources(work *schema.Work) ([]*schema.Work, error) {
 	// Normalize search data
 	work.Title = strings.ToLower(util.CleanString(work.Title))
@@ -144,6 +161,44 @@ func (d *Database) SearchSources(work *schema.Work) ([]*schema.Work, error) {
 	return works, nil
 }
 
-func (d *Database) Search(work *schema.Work) ([]*schema.Work, error) {
-	return nil, nil
+func (d *Database) getWorksByHashes(h []string) (works []*schema.Work, err error) {
+	coll := d.Collection("works")
+	query := bson.M {
+		"hash": bson.M {
+			"$in": h,
+		},
+	}
+
+	cur, err := coll.Find(context.Background(), query)
+	if err != nil {
+		return
+	}
+
+	err = cur.All(context.Background(), &works)
+	return
+}
+
+func (d *Database) Search(work *schema.Work) (w []*schema.Work, err error) {
+	w, err = d.ExactSearch(work)
+	if err != nil {
+		log.Printf("Exact search failed: %v", err)
+	} else {
+		return
+	}
+
+	candidates, err := d.SearchSources(work)
+	var candidateByHash map[string]*schema.Work
+	if err != nil {
+		log.Printf("Sources search failed: %v", err)
+	} else {
+		for _, c := range candidates {
+			err = c.Normalize()
+			if err != nil {
+				return
+			}
+			candidateByHash[c.Hash] = c
+		}
+	}
+
+	return
 }

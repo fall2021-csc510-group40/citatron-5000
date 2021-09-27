@@ -11,27 +11,27 @@ import (
 
 // Work represents a generic work like article, book, etc.
 type Work struct {
-	ID   string `json:"id" bson:"_id"`
-	Hash string `json:"hash"`
+	ID   string `json:"id" bson:"_id,omitempty"`
+	Hash string `json:"hash" bson:",omitempty"`
 
-	Type string `json:"type"`
+	Type string `json:"type" bson:",omitempty"`
 
-	DOI   string `json:"doi"`
-	Arxiv string `json:"arxiv"`
-	ISBN  string `json:"isbn"`
+	DOI   string `json:"doi" bson:",omitempty"`
+	Arxiv string `json:"arxiv" bson:",omitempty"`
+	ISBN  string `json:"isbn" bson:",omitempty"`
 
-	Title   string   `json:"title"`
-	Authors []string `json:"authors"`
+	Title   string   `json:"title" bson:",omitempty"`
+	Authors []string `json:"authors" bson:",omitempty"`
 
-	Version string `json:"version"`
-	Venue   string `json:"venue"`
-	Page    string `json:"page"`
+	Version string `json:"version" bson:",omitempty"`
+	Venue   string `json:"venue" bson:",omitempty"`
+	Page    string `json:"page" bson:",omitempty"`
 
-	Year  int `json:"year"`
-	Month int `json:"month"`
-	Day   int `json:"day"`
+	Year  int `json:"year" bson:",omitempty"`
+	Month int `json:"month" bson:",omitempty"`
+	Day   int `json:"day" bson:",omitempty"`
 
-	Keywords []string `json:"keywords"`
+	Keywords []string `json:"keywords" bson:",omitempty"`
 }
 
 // SearchRequest is the body of a search request
