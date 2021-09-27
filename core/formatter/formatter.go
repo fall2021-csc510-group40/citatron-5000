@@ -4,7 +4,6 @@ import (
 	"core/schema"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func BibtexFormat(paper *schema.Work) string {
@@ -38,7 +37,7 @@ func BibtexFormat(paper *schema.Work) string {
 		citation += "Journal= { " + paper.Venue + " },\n"
 	}
 	if paper.Month != 0 {
-		citation += "Month= { " + strconv.Itoa(paper.Year) + " }, \n"
+		citation += "Month= { " + strconv.Itoa(paper.Month) + " }, \n"
 	}
 
 	if paper.Year != 0 {
@@ -48,53 +47,32 @@ func BibtexFormat(paper *schema.Work) string {
 	if paper.Page != "" {
 		citation += "Page= { " + paper.Page + " }, \n"
 	}
-
-	// need to check this logic
-	// if len(paper.Authors) > 0 {
-	// 	citation += "author={"
-	// 	for i, author := range paper.Authors {
-	// 		parts := strings.Split(author, " ")
-	// 		if len(parts) > 1 {
-	// 			citation += parts[1] + ", " + parts[0]
-	// 		} else {
-	// 			citation += parts[0]
-	// 		}
-	// 		if i != (len(paper.Authors) - 1) {
-	// 			citation += "and"
-	// 		}
-	// 	}
 	citation += "},\n"
-	// }
 	return citation
 }
 
 func PlaintextFormat(paper *schema.Work) string {
 	var citation string = ""
-	if len(paper.Authors) > 0 {
-		for i, author := range paper.Authors {
-			parts := strings.Split(author, " ")
-			if len(parts) > 1 {
-				citation += string(parts[0][0]) + ". " + parts[1]
-			} else {
-				citation += parts[0]
-			}
-			if i == (len(paper.Authors) - 2) {
-				citation += "and"
-			}
-		}
-		citation += ", "
-	}
 	if len(paper.Title) > 0 {
-		citation += "\"" + paper.Title + ",\""
+		citation += paper.Title + ", "
 	}
+	if len(paper.Authors) > 0 {
+		for _, author := range paper.Authors {
+			citation += author + ", "
+		}
+	}
+
 	if len(paper.Venue) > 0 {
 		citation += paper.Venue + ", "
 	}
 	if paper.Month != 0 {
-		citation += time.Month(paper.Month).String() + ", "
+		citation += strconv.Itoa(paper.Month) + ", "
 	}
 	if paper.Year != 0 {
-		citation += strconv.Itoa(paper.Year)
+		citation += strconv.Itoa(paper.Year) + ","
 	}
+	citation = strings.TrimSpace(citation)
+	citation = strings.TrimSuffix(citation, ",")
+	citation += "."
 	return citation
 }
