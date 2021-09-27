@@ -8,7 +8,8 @@ import (
 
 // BibtexFormat formats a work in Bibtex style
 func BibtexFormat(work *schema.Work) string {
-	var citation string = "@article{Key= { YOUR_KEY_HERE },\n"
+	citation := "@article{Key= { YOUR_KEY_HERE },\n"
+
 	if len(work.Authors) > 0 {
 		citation += "Author= { "
 		for i := 0; i < len(work.Authors)-1; i++ {
@@ -55,7 +56,7 @@ func BibtexFormat(work *schema.Work) string {
 
 // PlaintextFormat formats a work in a simple plaintext format
 func PlaintextFormat(work *schema.Work) string {
-	var citation string
+	citation := ""
 
 	if len(work.Title) > 0 {
 		citation += work.Title + ", "
