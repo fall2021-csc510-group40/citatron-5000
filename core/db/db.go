@@ -29,7 +29,7 @@ func New(uri string) (*Database, error) {
 		return nil, err
 	}
 	return &Database{
-		client.Database("works"),
+		client.Database("citeman"),
 	}, nil
 }
 
