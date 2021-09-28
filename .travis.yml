@@ -7,7 +7,7 @@ env:
     - PATH=$HOME/gopath/bin:$PATH
 
 install:
-  - go get github.com/fall2021-csc510-group40/Project-1/
+  - go get github.com/fall2021-csc510-group40/Project-1/core/...
 
 before_script:
   - cd core
