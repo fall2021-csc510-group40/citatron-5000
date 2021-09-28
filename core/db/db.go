@@ -5,12 +5,12 @@ import (
 	"core/schema"
 	"core/source"
 	"core/util"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"strings"
 	"sync"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -164,8 +164,8 @@ func (d *Database) SearchSources(work *schema.Work) ([]*schema.Work, error) {
 
 func (d *Database) getWorksByHashes(h []string) (works []*schema.Work, err error) {
 	coll := d.Collection("works")
-	query := bson.M {
-		"hash": bson.M {
+	query := bson.M{
+		"hash": bson.M{
 			"$in": h,
 		},
 	}
@@ -190,14 +190,14 @@ func (d *Database) rewriteMultipleWorks(works []*schema.Work) error {
 
 		m := doc.Map()
 		delete(m, "_id")
-		update := bson.M {
+		update := bson.M{
 			"$set": m,
 		}
 
 		model := mongo.
 			NewUpdateOneModel().
 			SetUpdate(update).
-			SetFilter(bson.M {
+			SetFilter(bson.M{
 				"hash": w.Hash,
 			}).
 			SetUpsert(true)
