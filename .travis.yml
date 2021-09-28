@@ -11,6 +11,8 @@ install:
 
 before_script:
   - cd core
-   
+
 script:
+   - pwd
+   - go build
    - go test -v ./...
