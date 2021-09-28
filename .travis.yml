@@ -9,5 +9,8 @@ env:
 install:
   - go get github.com/fall2021-csc510-group40/Project-1/core
 
+before_script:
+  - cd core
+   
 script:
    - go test -v ./...
