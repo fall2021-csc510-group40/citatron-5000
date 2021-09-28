@@ -13,6 +13,6 @@ before_script:
   - cd core
 
 script:
-   - pwd
-   - go build
+   - cd core  
+   - go build core
    - go test -v ./...
