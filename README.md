@@ -12,11 +12,11 @@ The Citatron 5000 Bot is a telegram bot which allows users to quickly cite a pap
 # Working with the Citatron 5000 API
 The core holds all of the backend of the Citatron 5000 API. This includes the database, formatter, schema, server, source searchers, and util folders.
 
-##Elements of Citatron Core
+## Elements of Citatron Core
 **Add links to READMEs for every core folder here**
 
-#Tests
+# Tests
 **Add info about tests**
 
-#Documentation
+# Documentation
 **Add info about documentation if we want some**
