@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 [![Build Status](https://app.travis-ci.com/fall2021-csc510-group40/Project-1.svg?branch=main)](https://app.travis-ci.com/fall2021-csc510-group40/Project-1)
 
 ![Citatron Logo](https://user-images.githubusercontent.com/43625082/135329921-51eeb5d9-b077-4a65-b130-bb4f7c327e53.png)
+=======
+<p align="center">
+<img src="https://user-images.githubusercontent.com/43625082/135329921-51eeb5d9-b077-4a65-b130-bb4f7c327e53.png" alt="Citatron Logo" width="700"/>
+</p>
+>>>>>>> 4d384021857a8bb575fe9dd9e40fdcf12a39fb1f
 
 # About the Citatron 5000 Project
 The Citatron 5000 Project seeks an easier and quicker way to grab paper citations for your projects. The project currently includes an API which searches for the input paper name across multiple data sources including the ACM site, the CrossRef database, and the Citatron 5000 database and returns the cited paper in either plain text IEEE or Bibtex format. This API can be integrated with different extensions/services and is currently used with a telegram bot to demonstrate its current functionality.
