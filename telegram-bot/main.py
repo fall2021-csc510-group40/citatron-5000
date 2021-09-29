@@ -46,13 +46,15 @@ class Bot:
         offset = context.chat_data["results_offset"]
         assert offset < len(results)
 
-        has_next_page = len(results) - offset > Bot.SEARCH_PAGE_SIZE
+        has_next_page = (len(results) - offset > Bot.SEARCH_PAGE_SIZE)
+        has_prev_page = (offset > 0)
+        self.logger.debug(f"creating choice keyboard, total: {len(results)}, offset: {offset}, next: {has_next_page}, prev: {has_prev_page}")
         keyboard = get_choice_keyboard([
             {
                 "text": f'{work["title"]} by {", ".join(work["authors"])}',
                 "data": work["id"]
             } for work in results[offset:offset + Bot.SEARCH_PAGE_SIZE]
-        ], add_next_page=has_next_page)
+        ], add_next_page=has_next_page, add_prev_page=has_prev_page)
         self.logger.debug(f"Sending keyboard: {keyboard.inline_keyboard}")
 
         context.bot.send_message(text="Please choose the desired work:",
@@ -110,6 +112,10 @@ class Bot:
             return ConversationHandler.END
         elif query.data == "next_page":
             context.chat_data["results_offset"] += Bot.SEARCH_PAGE_SIZE
+            self._request_search_choice(update, context)
+            return Bot.CHOOSING
+        elif query.data == "prev_page":
+            context.chat_data["results_offset"] -= Bot.SEARCH_PAGE_SIZE
             self._request_search_choice(update, context)
             return Bot.CHOOSING
         else:

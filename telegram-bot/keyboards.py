@@ -6,7 +6,7 @@ def _get_digit_emoji(number):
     return f"{number}\U0000FE0F\U000020E3"
 
 
-def get_choice_keyboard(choices, add_next_page=False):
+def get_choice_keyboard(choices, add_next_page=False, add_prev_page=False):
     if len(choices) > 9:
         raise ValueError()
 
@@ -19,20 +19,28 @@ def get_choice_keyboard(choices, add_next_page=False):
         ] for i, option in enumerate(choices)
     ]
 
-    if add_next_page:
-        keyboard_layout += [[
-            InlineKeyboardButton(
-                text=emoji.emojize(":magnifying_glass_tilted_right:", use_aliases=True) + " - " + "Next page...",
-                callback_data="next_page"
-            )
-        ]]
+    pages = []
+    if add_prev_page:
+        pages.append(InlineKeyboardButton(
+                        text=emoji.emojize(":left_arrow:", use_aliases=True) + " - " + "Previous page...",
+                        callback_data="prev_page"
+                    ))
 
-    keyboard_layout += [[
+    if add_next_page:
+        pages.append(InlineKeyboardButton(
+                        text=emoji.emojize(":right_arrow:", use_aliases=True) + " - " + "Next page...",
+                        callback_data="next_page"
+                    ))
+
+    if len(pages) > 0:
+        keyboard_layout.append(pages)
+
+    keyboard_layout.append([
         InlineKeyboardButton(
             text=emoji.emojize(":cross_mark:", use_aliases=True) + " - " + "Cancel",
             callback_data="cancel"
         )
-    ]]
+    ])
 
     keyboard = InlineKeyboardMarkup(keyboard_layout)
 
