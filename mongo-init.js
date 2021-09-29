@@ -17,7 +17,6 @@ db.createCollection("works", {
         required: [
             "title",
             "authors",
-            "year",
             "hash",
         ],
         properties: {
@@ -35,10 +34,6 @@ db.createCollection("works", {
                     minLength: 1,
                     description: "must be a non-empty string"
                 }
-            },
-            year: {
-                bsonType: ["int"],
-                description: "must be a number and is required"
             },
             hash: {
                 bsonType: ["string"],
