@@ -1,4 +1,4 @@
-<p align="center"
+<p align="center">
 <img src="https://user-images.githubusercontent.com/43625082/135329921-51eeb5d9-b077-4a65-b130-bb4f7c327e53.png" alt="Citatron Logo" width="700"/>
 </p>
 # About the Citatron 5000 Project
