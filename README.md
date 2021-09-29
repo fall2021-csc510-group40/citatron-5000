@@ -20,12 +20,12 @@ The core holds all of the backend of the Citatron 5000 API. This includes the da
 
 ## Elements of Citatron Core
 **Update READMEs for every core folder**  
-[db](/docs/db.md)  
-[formatter](/docs/formatter.md)  
-[schema](/docs/schema.md)  
-[server](/docs/server.md)  
-[source](/docs/source.md) 
-[util](/docs/util.md)  
+* [db](/docs/db.md)  
+* [formatter](/docs/formatter.md)  
+* [schema](/docs/schema.md)  
+* [server](/docs/server.md)  
+* [source](/docs/source.md) 
+* [util](/docs/util.md)  
 
 # Tests
 **Add info about tests**
