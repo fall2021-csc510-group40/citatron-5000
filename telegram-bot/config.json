@@ -1,5 +1,5 @@
 {
-  "api_url": "http://localhost:8899",
+  "api_url": "http://core:8899",
   "token": "YOUR_TOKEN",
   "formats": {
     "bibtex":  "BibTeX",
