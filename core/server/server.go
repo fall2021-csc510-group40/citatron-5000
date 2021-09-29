@@ -11,7 +11,7 @@ import (
 )
 
 // MaxResults is the maximum results for a single query
-const MaxResults = 10
+const MaxResults = 100
 
 // Server represents a generic citation server
 type Server struct {
