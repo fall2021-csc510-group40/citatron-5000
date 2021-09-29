@@ -6,7 +6,7 @@ The Citatron 5000 Bot is a telegram bot which allows users to quickly cite a pap
 
 # Citatron 5000 Bot Installation
 1. Clone the Citatron 5000 Repository
-2. From the root directory run: `docker-compose up –build`
+2. From the root directory run: `docker-compose up --build`
 3. **ADD CONFIG INFO HERE**
 
 # Working with the Citatron 5000 API
