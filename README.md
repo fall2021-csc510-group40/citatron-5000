@@ -1,6 +1,6 @@
 [![Build Status](https://app.travis-ci.com/fall2021-csc510-group40/Project-1.svg?branch=main)](https://app.travis-ci.com/fall2021-csc510-group40/Project-1)
 
-<p align="center>
+<p align="center">
 <img src="https://user-images.githubusercontent.com/43625082/135329921-51eeb5d9-b077-4a65-b130-bb4f7c327e53.png" alt="Citatron Logo" style="width:700px;"/>
 </p>
 
