@@ -58,7 +58,7 @@ but nevertheless, here is a track record that everyone is contributing a lot)|ev
 |4.5: troubleshooting information that describes the symptoms and step-by-step solutions for problems and error messages | (y/n) evidence |
 |4.6: provide comprehensive API documentation | (y/n) evidence |
 |4.7: documentation under revision control with your source code | y |
-|4.8: publish your release history e.g. release data, version numbers, key features of each release etc. on your web site or in your documentation | (y/n) evidence |
+|4.8: publish your release history e.g. release data, version numbers, key features of each release etc. on your web site or in your documentation | y |
 |5.1: software describe how a user can get help with using your software | (y/n) evidence |
 |5.2: documentation describe what support, if any, you provide to users and developers| (y/n) evidence |
 |5.3: project have an e-mail address or forum that is solely for supporting users | (y/n) evidence |
@@ -70,11 +70,11 @@ but nevertheless, here is a track record that everyone is contributing a lot)|ev
 |7.1: software allow data to be imported and exported using open data formats (GIF, HTML, etc.) | y |
 |7.2: software allow communications using open communications protocols (HTTP, FTP, etc.) | y |
 |8.1: software cross-platform compatible | y |
-|9.1: software adhere to appropriate accessibility conventions or standards | (y/n) evidence |
-|9.2: documentation adhere to appropriate accessibility conventions or standards | (y/n) evidence |
+|9.1: software adhere to appropriate accessibility conventions or standards | y |
+|9.2: documentation adhere to appropriate accessibility conventions or standards | y |
 |10.1: source code stored in a repository under revision control | y |
 |10.2: source code release a snapshot of the repository | (y/n) evidence |
-|10.3: releases tagged in the repository | (y/n) evidence |
+|10.3: releases tagged in the repository | y |
 |10.4: a branch of the repository that is always stable | y |
 |10.5: back-up your repository | y |
 |11.1: publicly-available instructions for building your software from the source code | (y/n) evidence |
@@ -84,12 +84,12 @@ but nevertheless, here is a track record that everyone is contributing a lot)|ev
 |11.5: documentation list the version number for all third-party dependencies | y |
 |11.6: software list the web address, and licences for all third-party dependencies and say whether the dependencies are mandatory or optional | y |
 |11.7: download dependencies using a dependency management tool or package manager | y |
-|11.8: have tests that can be run after your software has been built or deployed to show whether the build or deployment has been successful| (y/n) evidence |
+|11.8: have tests that can be run after your software has been built or deployed to show whether the build or deployment has been successful| n/a |
 |12.1: automated test suite for your software | y |
-|12.2: framework to periodically (e.g. nightly) run your tests on the latest version of the source code | (y/n) evidence |
+|12.2: framework to periodically (e.g. nightly) run your tests on the latest version of the source code | n/a |
 |12.3: use continuous integration, automatically running tests whenever changes are made to your source code | y |
 |12.4: test results publicly visible | y |
-|12.5: all manually-run tests documented | (y/n) evidence |
+|12.5: all manually-run tests documented | n/a |
 |13.1: project have resources (e.g. blog, Twitter, RSS feed, Facebook page, wiki, mailing list) that are regularly updated with information about your software | y |
 |13.2: website state how many projects and users are associated with your project | (y/n) evidence |
 |13.3: provide success stories on your website | (y/n) evidence |
