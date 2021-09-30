@@ -32,7 +32,7 @@ but nevertheless, here is a track record that everyone is contributing a lot)| G
 | test cases are routinely executed | GF: 0, |e.g. travis-com.com or github actions or something|
 | the files CONTRIBUTING.md lists coding standards and lots of tips on how to extend the system without screwing things up| | |
 | issues are discussed before they are closed | GF: 3, | even if you discuss in slack, need a sumamry statement here|
-| Chat channel: exists| GF: 3, | Screenshot of Telegram in Docs folder|
+| Chat channel: exists| GF: 3, | Screenshot of Telegram in experiments folder|
 | test cases:.a large proportion of the issues related to handling failing cases.| GF: 0, |if a test case fails, open an issue and fix it|
 | evidence that the whole team is using the same tools: everyone can get to all tools and files | GF: 3, | |
 | evidence that the whole team is using the same tools (e.g. config files in the repo, updated by lots of different people)| GF: 1, | |
