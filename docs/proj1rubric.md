@@ -48,7 +48,7 @@ but nevertheless, here is a track record that everyone is contributing a lot)|ev
 |2.1:  name of your project/software unique | y |
 |2.2: project/software name free from trademark violations | y |
 |3.1: software available as a package that can be deployed without building it | n/a |
-|3.2: software available for free | | y |
+|3.2: software available for free | y |
 |3.3: source code publicly available to download, either as a downloadable bundle or via access to a source code repository | y |
 |3.4: software hosted in an established, third-party repository like GitHub | y |
 |4.1: documentation clearly available on your website or within your software | y |
