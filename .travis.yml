@@ -7,9 +7,9 @@ env:
     - PATH=$HOME/gopath/bin:$PATH
 
 install:
-  - git clone https://github.com/fall2021-csc510-group40/Project-1.git
+  - git clone https://github.com/fall2021-csc510-group40/citatron-5000.git
 
 script:
-   - cd Project-1/core
+   - cd citatron-5000/core
    - go build
    - go test -v ./...
