@@ -35,3 +35,7 @@ There is no funding.
 # Deprecation
 
 For any deprecation, we will pin an announcement to the README. 
+
+# Support
+If you would like to contact us about an issue, please submit the issue via the issues tab in the Github repo and our support team will look into it.
+
