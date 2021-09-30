@@ -25,6 +25,6 @@ To report a bug:
 4. Include screenshots or additional info as applicable.
 
 ## Code Style Guide
-* Include GoDoc style comments for all functions
-* Include proper testing for all code you intend to add
-* Comment code and use fitting variable to make your code easier to understand
+* Include GoDoc style comments for all functions.
+* Include proper testing for all code you intend to add.
+* Comment code and use fitting variable to make your code easier to understand.
