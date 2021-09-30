@@ -1,0 +1,145 @@
+Function: GetMonth
+Description:  GetMonth returns the month number from string
+package: util
+Inputs: 
+  - month string
+Outputs: 
+  - month number int
+  - error
+
+Function: ParseDate
+Description:  ParseDate parses a month, day, year string into its parts
+package: util
+Inputs: 
+  - date string
+Outputs: 
+  - day number int
+  - month number int
+  - year int
+  - error
+
+Function: ParsePages
+Description:  ParsePages parses a page range string into its simplest form
+package: util
+Inputs: 
+  - page string
+Outputs: 
+  - page string
+
+Function: BibtexFormat
+Description:   BibtexFormat formats a work in Bibtex style
+package: formatter
+Inputs: 
+  - work struct
+Outputs: 
+  - Bibtex format string
+
+
+Function: PlaintextFormat
+Description:  PlaintextFormat formats a work in a simple plaintext format
+package: formatter
+Inputs: 
+  - work struct
+Outputs: 
+  - Plaintext format string
+
+Function: Normalize
+Description:   Normalize normalizes the data for a work and then populates its hash
+Inputs: 
+  - work struct
+Outputs: 
+  - error
+
+Function: Coalesce
+Description: Coalesce merges data with this work and another
+Inputs: 
+  - work struct
+Outputs: 
+  - empty
+
+Function: New
+Description: New creates a new citation server
+Inputs: 
+  - empty
+Outputs: 
+  - server struct
+
+Function: ListenAndServe
+Description: ListenAndServe starts the citation server on the given address
+Inputs: 
+  - address string
+Outputs: 
+  - error
+
+Function: search
+Description: search handles an HTTP request to search for works
+Inputs: 
+  -  http.ResponseWriter
+  - http.Request
+Outputs: 
+  - empty
+
+Function: format
+Description: format handles an HTTP request to format a work into a citation
+Inputs: 
+  -  http.ResponseWriter
+  - http.Request
+Outputs: 
+  - empty 
+
+Function: getAcmWorks
+Description: getAcmWorks parses the raw HTML from an ACM result page
+Inputs: 
+  -  goquery.Document
+Outputs: 
+  - work struct
+
+Function: SourceSearchACM
+Description:  SourceSearchACM searches the ACM digital library for a work
+Inputs: 
+  -  work struct
+Outputs: 
+  - work struct
+  - error
+
+Function: SourceSearchCrossRef
+Description:  SourceSearchCrossRef searches CrossRef for works
+Inputs: 
+  -  work struct
+Outputs: 
+  - work struct
+  - error
+
+Function: New 
+Description:  New constructs a new database
+Inputs: 
+  -  work struct
+Outputs: 
+  - work struct
+  - error
+
+
+Function:  ExactSearch
+Description:  ExactSearch searches the work in the database
+Inputs: 
+  -  work struct
+Outputs: 
+  - work struct
+  - error
+
+
+Function:  GetWorkById
+Description:  Fetech the work from the database using hex id generated
+Inputs: 
+  -  id string
+Outputs: 
+  - work struct
+  - error
+
+Function:  SearchSources
+Description:  SearchSources searches the database or search sources for a given work
+Inputs: 
+  -  id string
+Outputs: 
+  - work struct
+  - error
