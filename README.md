@@ -34,3 +34,11 @@ The core holds all of the backend of the Citatron 5000 API. This includes the da
 
 # Documentation
 **Add info about documentation if we want some**
+
+# Funding
+
+There is no funding.
+
+# Deprecation
+
+For any deprecation, we will pin an announcement to the README. 

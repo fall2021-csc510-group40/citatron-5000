@@ -110,5 +110,5 @@ but nevertheless, here is a track record that everyone is contributing a lot)|ev
 |15.6: each of your source code files include a licence header | y |
 |15.7: have a recommended citation for your software | y |
 |16.1: website or documentation include a project roadmap (a list of project and development milestones for the next 3, 6 and 12 months) | (y/n) evidence |
-|16.2: website or documentation describe how your project is funded, and the period over which funding is guaranteed | n/a |
-|16.3: make timely announcements of the deprecation of components, APIs, etc. | n/a |
+|16.2: website or documentation describe how your project is funded, and the period over which funding is guaranteed | y |
+|16.3: make timely announcements of the deprecation of components, APIs, etc. | y |
