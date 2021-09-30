@@ -17,6 +17,7 @@ The code of conduct can be found [here](CODE_OF_CONDUCT.md).
 
 ## Bug Reporting
 Bugs are to be reported as Github issues.  
+  
 To report a bug:  
 1. Briefly describe the bug in the title of the issue.
 2. Describe the steps one would take to replicate this bug. Explain what you did as well as how you did it.
