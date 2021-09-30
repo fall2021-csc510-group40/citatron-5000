@@ -1,3 +1,5 @@
+
+[![GitHub license](https://img.shields.io/github/license/fall2021-csc510-group40/citatron-5000)](https://github.com/fall2021-csc510-group40/citatron-5000/blob/main/LICENSE)
 [![Build Status](https://app.travis-ci.com/fall2021-csc510-group40/Project-1.svg?branch=main)](https://app.travis-ci.com/fall2021-csc510-group40/Project-1)
 [![DOI](https://zenodo.org/badge/408212287.svg)](https://zenodo.org/badge/latestdoi/408212287)
 
