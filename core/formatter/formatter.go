@@ -62,15 +62,15 @@ func BibtexFormat(work *schema.Work) string {
 		citation += "    Journal= { " + work.Venue + " },\n"
 	}
 	if work.Month != 0 {
-		citation += "    Month= { " + strconv.Itoa(work.Month) + " }, \n"
+		citation += "    Month= { " + strconv.Itoa(work.Month) + " },\n"
 	}
 
 	if work.Year != 0 {
-		citation += "    Year= { " + strconv.Itoa(work.Year) + " }, \n"
+		citation += "    Year= { " + strconv.Itoa(work.Year) + " },\n"
 	}
 
 	if work.Page != "" {
-		citation += "    Page= { " + work.Page + " }, \n"
+		citation += "    Page= { " + work.Page + " },\n"
 	}
 
 	citation += "},\n"
