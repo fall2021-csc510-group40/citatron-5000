@@ -9,7 +9,7 @@
 </p>
 
 # About the Citatron 5000 Project
-The Citatron 5000 Project seeks an easier and quicker way to grab paper citations for your projects. The project currently includes an API which searches for the input paper name across multiple data sources including the ACM site, the CrossRef database, and the Citatron 5000 database and returns the cited paper in either plain text IEEE or Bibtex format. This API can be integrated with different extensions/services and is currently used with a telegram bot to demonstrate its current functionality.
+The Citatron 5000 Project seeks an easier and quicker way to grab paper citations for your projects. It was created for people frustrated with inaccurate, slow, and ad-ridden citation services. The project currently includes an API which searches for the input paper name across multiple data sources including the ACM site, the CrossRef database, and the Citatron 5000 database and returns the cited paper in either plain text IEEE or Bibtex format. This API can be integrated with different extensions/services and is currently used with a telegram bot to demonstrate its functionality.
 
 # Citatron 5000 Bot Usage
 The Citatron 5000 Bot is a telegram bot which allows users to quickly cite a paper by name in either plain text IEEE or Bibtex format. Simply send the name of the paper you are looking to cite and choose one of the two formatting options and the Citatron will return a list of 5 citations for papers which most closely match the input name.
