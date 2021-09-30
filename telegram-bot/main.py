@@ -1,3 +1,6 @@
+"""
+Copyright (c) 2021 contributors of the Citatron-5000 Project. All Rights Reserved
+"""
 import json
 
 from telegram.ext import Updater, MessageHandler, CallbackQueryHandler, CallbackContext, Filters, ConversationHandler
