@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import requests
+import uuid
 
 
 class APIException(Exception):
@@ -47,7 +48,7 @@ class APIAdaptor:
 
         self.logger.debug(f"Sending search request: {request_data}")
 
-        rsp = requests.get(self.api_url + "/search", json=request_data)
+        rsp = requests.get(self.api_url + "/search", json=request_data, headers={"X-Request-ID": str(uuid.uuid4())})
         self.logger.debug(f"Response: {rsp.json()}")
 
         if not rsp.ok:
@@ -63,7 +64,7 @@ class APIAdaptor:
                 "id": work_id,
             },
             "format": format,
-        })
+        }, headers={"X-Request-ID": str(uuid.uuid4())})
 
         if not rsp.ok:
             raise APIException("format", rsp.status_code, rsp.json().get("error", None))

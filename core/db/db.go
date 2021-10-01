@@ -28,47 +28,83 @@ import (
 	"core/schema"
 	"core/source"
 	"core/util"
-	"log"
-	"strings"
-	"sync"
-
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"strings"
+	"sync"
 )
 
-var searches = [...]source.Search{source.SourceSearchACM, source.SourceSearchCrossRef}
+var searches = [...]source.Search{source.SearchACM, source.SearchCrossRef}
+
+type DatabaseConfig struct {
+	URI      string `json:"uri"`
+	Database string `json:"database"`
+
+	Username string `json:"username"`
+	Password string `json:"password"`
+
+	SourceTimeout   util.Duration `json:"source_timeout"`
+	DatabaseTimeout util.Duration `json:"database_timeout"`
+
+	LogLevel string `json:"log_level"`
+}
 
 // Database represents a generic database instance for works
 type Database struct {
 	*mongo.Database
+
+	config *DatabaseConfig
+
+	logger log.FieldLogger
 }
 
 // New constructs a new database
-func New(uri string) (*Database, error) {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
+func New(config *DatabaseConfig) (*Database, error) {
+	credential := options.Credential{
+		Username: config.Username,
+		Password: config.Password,
+		AuthSource: config.Database,
+	}
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(config.URI).SetAuth(credential))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	logger := log.New()
+	level, err := log.ParseLevel(config.LogLevel)
 	if err != nil {
 		return nil, err
 	}
+
+	logger.SetLevel(level)
+
 	return &Database{
-		client.Database("citeman"),
+		Database: client.Database(config.Database),
+		config:   config,
+		logger:   logger.WithField("component", "db"),
 	}, nil
 }
 
-func (d *Database) ExactSearch(work *schema.Work) (res []*schema.Work, err error) {
+// ExactSearch performs a database search for all works that exactly match the fields provided in the work argument
+func (d *Database) ExactSearch(ctx context.Context, work *schema.Work) (res []*schema.Work, err error) {
+	ctx, cancel := context.WithTimeout(ctx, d.config.DatabaseTimeout.Duration)
+	defer cancel()
+
 	coll := d.Collection("works")
 	query, err := convertToDoc(work)
 	if err != nil {
 		return
 	}
 
-	cur, err := coll.Find(context.Background(), query)
+	cur, err := coll.Find(ctx, query)
 	if err != nil {
 		return
 	}
 
-	err = cur.All(context.Background(), &res)
+	err = cur.All(ctx, &res)
 	if err != nil {
 		return
 	}
@@ -76,7 +112,11 @@ func (d *Database) ExactSearch(work *schema.Work) (res []*schema.Work, err error
 	return
 }
 
-func (d *Database) GetWorkById(idString string) (w *schema.Work, err error) {
+// GetWorkById returns the work from the database with the idString as the id.
+func (d *Database) GetWorkById(ctx context.Context, idString string) (w *schema.Work, err error) {
+	ctx, cancel := context.WithTimeout(ctx, d.config.DatabaseTimeout.Duration)
+	defer cancel()
+
 	coll := d.Collection("works")
 	id, err := primitive.ObjectIDFromHex(idString)
 	if err != nil {
@@ -87,7 +127,7 @@ func (d *Database) GetWorkById(idString string) (w *schema.Work, err error) {
 		"_id": id,
 	}
 
-	res := coll.FindOne(context.Background(), query)
+	res := coll.FindOne(ctx, query)
 	w = &schema.Work{}
 	err = res.Decode(w)
 	return
@@ -103,7 +143,12 @@ func convertToDoc(v interface{}) (doc *bson.D, err error) {
 	return
 }
 
-func (d *Database) TextSearch(work *schema.Work) ([]*schema.Work, error) {
+// TextSearch performs text search on the work title using mongodb's build-in text index.
+// The results are ordered by score provided by the database
+func (d *Database) TextSearch(ctx context.Context, work *schema.Work) ([]*schema.Work, error) {
+	ctx, cancel := context.WithTimeout(ctx, d.config.DatabaseTimeout.Duration)
+	defer cancel()
+
 	collection := d.Collection("works")
 	query := bson.M{
 		"$text": bson.M{
@@ -113,7 +158,7 @@ func (d *Database) TextSearch(work *schema.Work) ([]*schema.Work, error) {
 
 	var results []*schema.Work
 
-	cur, err := collection.Find(context.Background(), query, &options.FindOptions{
+	cur, err := collection.Find(ctx, query, &options.FindOptions{
 		Sort: bson.M{
 			"score": bson.M{
 				"$meta": "textScore",
@@ -122,13 +167,11 @@ func (d *Database) TextSearch(work *schema.Work) ([]*schema.Work, error) {
 	})
 
 	if err != nil {
-		log.Fatal(err)
 		return nil, err
 	}
 
-	err = cur.All(context.Background(), &results)
+	err = cur.All(ctx, &results)
 	if err != nil {
-		log.Fatal(err)
 		return nil, err
 	}
 
@@ -136,7 +179,15 @@ func (d *Database) TextSearch(work *schema.Work) ([]*schema.Work, error) {
 }
 
 // SearchSources searches the database or search sources for a given work
-func (d *Database) SearchSources(work *schema.Work) ([]*schema.Work, error) {
+func (d *Database) SearchSources(ctx context.Context, work *schema.Work) ([]*schema.Work, error) {
+	ctx, cancel := context.WithTimeout(ctx, d.config.SourceTimeout.Duration)
+	defer cancel()
+
+	logger := d.logger
+	if req_id := ctx.Value("req_id"); req_id != nil {
+		logger = logger.WithField("req_id", req_id)
+	}
+
 	// Normalize search data
 	work.Title = strings.ToLower(util.CleanString(work.Title))
 
@@ -151,11 +202,13 @@ func (d *Database) SearchSources(work *schema.Work) ([]*schema.Work, error) {
 		go func(s source.Search) {
 			defer wg.Done()
 
-			works, err := s(work)
+			works, err := s(ctx, work)
 			if err != nil {
-				log.Printf("Error from source: %v", err)
+				logger.Errorf("Error from source: %v", err)
 				return
 			}
+			logger.Debugf("Source responded")
+
 
 			for _, w := range works {
 				if err := w.Normalize(); err != nil {
@@ -185,7 +238,10 @@ func (d *Database) SearchSources(work *schema.Work) ([]*schema.Work, error) {
 	return works, nil
 }
 
-func (d *Database) getWorksByHashes(h []string) (works []*schema.Work, err error) {
+func (d *Database) getWorksByHashes(ctx context.Context, h []string) (works []*schema.Work, err error) {
+	ctx, cancel := context.WithTimeout(ctx, d.config.DatabaseTimeout.Duration)
+	defer cancel()
+
 	coll := d.Collection("works")
 	query := bson.M{
 		"hash": bson.M{
@@ -193,16 +249,24 @@ func (d *Database) getWorksByHashes(h []string) (works []*schema.Work, err error
 		},
 	}
 
-	cur, err := coll.Find(context.Background(), query)
+	cur, err := coll.Find(ctx, query)
 	if err != nil {
 		return
 	}
 
-	err = cur.All(context.Background(), &works)
+	err = cur.All(ctx, &works)
 	return
 }
 
-func (d *Database) rewriteMultipleWorks(works []*schema.Work) error {
+func (d *Database) rewriteMultipleWorks(ctx context.Context, works []*schema.Work) error {
+	ctx, cancel := context.WithTimeout(ctx, d.config.DatabaseTimeout.Duration)
+	defer cancel()
+
+	logger := d.logger
+	if req_id := ctx.Value("req_id"); req_id != nil {
+		logger = logger.WithField("req_id", req_id)
+	}
+
 	var models []mongo.WriteModel
 
 	for _, w := range works {
@@ -228,29 +292,36 @@ func (d *Database) rewriteMultipleWorks(works []*schema.Work) error {
 		models = append(models, model)
 	}
 
-	log.Printf("Bulk write models: %v", models)
+	logger.Debugf("Bulk write models: %v", models)
 
 	coll := d.Collection("works")
-	_, err := coll.BulkWrite(context.Background(), models)
+	_, err := coll.BulkWrite(ctx, models)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (d *Database) Search(work *schema.Work) (works []*schema.Work, err error) {
-	works, err = d.ExactSearch(work)
+// Search looks for the documents in external sources and updates the database accordingly. The returned works
+// are the works found in the database after the update
+func (d *Database) Search(ctx context.Context, work *schema.Work) (works []*schema.Work, err error) {
+	logger := d.logger
+	if req_id := ctx.Value("req_id"); req_id != nil {
+		logger = logger.WithField("req_id", req_id)
+	}
+
+	works, err = d.ExactSearch(ctx, work)
 	if err != nil || len(works) == 0 {
-		log.Printf("Exact search failed: %v", err)
+		logger.Debugf("Exact search failed: %v", err)
 	} else {
 		return
 	}
 
-	candidates, err := d.SearchSources(work)
+	candidates, err := d.SearchSources(ctx, work)
 	if err != nil || len(candidates) == 0 {
-		log.Printf("Sources search failed: %v", err)
+		logger.Debugf("Sources search failed: %v", err)
 	} else {
-		log.Printf("Found %v candidates from the sources", len(candidates))
+		logger.Debugf("Found %v candidates from the sources", len(candidates))
 		var hashes []string
 		candidateByHash := make(map[string]*schema.Work)
 		for _, c := range candidates {
@@ -266,12 +337,12 @@ func (d *Database) Search(work *schema.Work) (works []*schema.Work, err error) {
 			hashes = append(hashes, c.Hash)
 		}
 
-		dbCandidates, err := d.getWorksByHashes(hashes)
+		dbCandidates, err := d.getWorksByHashes(ctx, hashes)
 		if err != nil {
 			return nil, err
 		}
 
-		log.Printf("Got %v matches in the database", len(dbCandidates))
+		logger.Debugf("Got %v matches in the database", len(dbCandidates))
 
 		for _, dbCandidate := range dbCandidates {
 			sourceCandidate := candidateByHash[dbCandidate.Hash]
@@ -284,13 +355,13 @@ func (d *Database) Search(work *schema.Work) (works []*schema.Work, err error) {
 			worksToWrite = append(worksToWrite, w)
 		}
 
-		log.Printf("Writing candidates to database")
-		err = d.rewriteMultipleWorks(worksToWrite)
+		logger.Debugf("Writing candidates to database")
+		err = d.rewriteMultipleWorks(ctx, worksToWrite)
 		if err != nil {
-			log.Printf("Unable to write candidates to the database: %v", err)
+			logger.Errorf("Unable to write candidates to the database: %v", err)
 			return nil, err
 		}
 	}
 
-	return d.TextSearch(work)
+	return d.TextSearch(ctx, work)
 }

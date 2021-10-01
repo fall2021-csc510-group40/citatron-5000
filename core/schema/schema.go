@@ -111,7 +111,7 @@ func (w *Work) Normalize() error {
 		return errors.New("no author")
 	}
 
-	// Alphabetize authors and keywords
+	// Alphabetize keywords
 	sort.Strings(w.Keywords)
 
 	// Calculate hash
@@ -160,6 +160,7 @@ func (w *Work) Coalesce(other *Work) {
 		w.Page = other.Page
 	}
 
+	// TODO: consider merging the whole date
 	if w.Day == 0 {
 		w.Day = other.Day
 	}

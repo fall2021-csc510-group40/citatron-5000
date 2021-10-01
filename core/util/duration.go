@@ -1,4 +1,5 @@
-/*MIT License
+/*
+MIT License
 
 Copyright (c) 2021 fall2021-csc510-group40
 
@@ -20,12 +21,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-package source
+package util
 
 import (
-	"context"
-	"core/schema"
+	"encoding/json"
+	"errors"
+	"time"
 )
 
-// Search is a generic search function for populating the database
-type Search func(ctx context.Context, w *schema.Work) ([]*schema.Work, error)
+type Duration struct {
+	time.Duration
+}
+
+func (d Duration) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.String())
+}
+
+func (d *Duration) UnmarshalJSON(b []byte) error {
+	var v interface{}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return err
+	}
+	switch value := v.(type) {
+	case float64:
+		d.Duration = time.Duration(value)
+		return nil
+	case string:
+		var err error
+		d.Duration, err = time.ParseDuration(value)
+		if err != nil {
+			return err
+		}
+		return nil
+	default:
+		return errors.New("invalid duration")
+	}
+}

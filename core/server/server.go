@@ -23,17 +23,22 @@ SOFTWARE.
 package server
 
 import (
+	"context"
 	"core/db"
 	"core/formatter"
 	"core/schema"
 	"encoding/json"
 	"io/ioutil"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
 // MaxResults is the maximum results for a single query
 const MaxResults = 100
+
+type Config struct {
+	Database *db.DatabaseConfig `json:"database"`
+}
 
 // Server represents a generic citation server
 type Server struct {
@@ -41,10 +46,14 @@ type Server struct {
 }
 
 // New creates a new citation server
-func New() *Server {
-	server := &Server{}
-	server.DB, _ = db.New("mongodb://core:password@mongo:27017/citeman")
-	return server
+func New(config *Config) (*Server, error) {
+	database, err := db.New(config.Database)
+	if err != nil {
+		return nil, err
+	}
+	return &Server{
+		database,
+	}, nil
 }
 
 // ListenAndServe starts the citation server on the given address
@@ -54,8 +63,19 @@ func (s *Server) ListenAndServe(addr string) error {
 	return http.ListenAndServe(addr, nil)
 }
 
+func contextFromRequest(req *http.Request) context.Context {
+	ctx := context.Background()
+	if req_id := req.Header.Get("X-Request-ID"); req_id != "" {
+		ctx = context.WithValue(ctx, "req_id", req_id)
+	}
+
+	return ctx
+}
+
 // search handles an HTTP request to search for works
 func (s *Server) search(w http.ResponseWriter, req *http.Request) {
+	ctx := contextFromRequest(req)
+
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -70,7 +90,7 @@ func (s *Server) search(w http.ResponseWriter, req *http.Request) {
 
 	var searchResponse schema.SearchResponse
 
-	results, err := s.DB.Search(searchRequest.Query)
+	results, err := s.DB.Search(ctx, searchRequest.Query)
 	if err == nil {
 		if len(results) > MaxResults {
 			results = results[0:MaxResults]
@@ -79,6 +99,7 @@ func (s *Server) search(w http.ResponseWriter, req *http.Request) {
 		searchResponse.Results = results
 	} else {
 		searchResponse.Error = err.Error()
+		log.Errorf("search failed: %v", err)
 	}
 
 	resp, err := json.Marshal(searchResponse)
@@ -93,6 +114,7 @@ func (s *Server) search(w http.ResponseWriter, req *http.Request) {
 
 // format handles an HTTP request to format a work into a citation
 func (s *Server) format(w http.ResponseWriter, req *http.Request) {
+	ctx := contextFromRequest(req)
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -111,7 +133,7 @@ func (s *Server) format(w http.ResponseWriter, req *http.Request) {
 
 	work := formatRequest.Work
 	if work.ID != "" {
-		work, err = s.DB.GetWorkById(work.ID)
+		work, err = s.DB.GetWorkById(ctx, work.ID)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			log.Printf("Cannot get work by id: %v", err)

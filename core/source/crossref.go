@@ -24,6 +24,7 @@ SOFTWARE.
 package source
 
 import (
+	"context"
 	"core/schema"
 	"encoding/json"
 	"io/ioutil"
@@ -31,15 +32,16 @@ import (
 	"net/url"
 )
 
-// SourceSearchCrossRef searches CrossRef for works
-func SourceSearchCrossRef(titleGetter *schema.Work) ([]*schema.Work, error) {
+// SearchCrossRef searches CrossRef for works
+func SearchCrossRef(ctx context.Context, w *schema.Work) ([]*schema.Work, error) {
 	var works []*schema.Work
-	var title string = titleGetter.Title
+	title := w.Title
 	query := url.Values{}
 	query.Add("query.bibliographic", title)
 	query.Add("rows", "5")
 
-	resp, err := http.Get("http://api.crossref.org/works?" + query.Encode())
+	req, _ := http.NewRequestWithContext(ctx, "GET", "http://api.crossref.org/works?" + query.Encode(), nil)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

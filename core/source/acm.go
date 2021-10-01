@@ -24,6 +24,7 @@ SOFTWARE.
 package source
 
 import (
+	"context"
 	"core/schema"
 	"core/util"
 	"errors"
@@ -92,8 +93,8 @@ func getAcmWorks(doc *goquery.Document) []*schema.Work {
 	return works
 }
 
-// SourceSearchACM searches the ACM digital library for a work
-func SourceSearchACM(w *schema.Work) ([]*schema.Work, error) {
+// SearchACM searches the ACM digital library for a work
+func SearchACM(ctx context.Context, w *schema.Work) ([]*schema.Work, error) {
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return nil, err
@@ -103,7 +104,8 @@ func SourceSearchACM(w *schema.Work) ([]*schema.Work, error) {
 		Jar: jar,
 	}
 
-	resp, err := client.Get("https://dl.acm.org/action/doSearch?AllField=" + url.QueryEscape(w.Title))
+	req, _ := http.NewRequestWithContext(ctx, "GET", "https://dl.acm.org/action/doSearch?AllField="+url.QueryEscape(w.Title), nil)
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
