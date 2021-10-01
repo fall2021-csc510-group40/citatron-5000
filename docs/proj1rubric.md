@@ -42,9 +42,9 @@ but nevertheless, here is a track record that everyone is contributing a lot)| G
 
 |Software Sustainability Point| Evidence|
 |-------|--------|
-|1.1: Provide a clear, high-level overview of your software| (y/n) evidence |
-|1.2: clearly describe the type of user who should use your software| (y/n) evidence |
-|1.3: case studies to show how your software has been used by yourself and others| (y/n) evidence
+|1.1: Provide a clear, high-level overview of your software| y |
+|1.2: clearly describe the type of user who should use your software| y |
+|1.3: case studies to show how your software has been used by yourself and others| n/a
 |2.1:  name of your project/software unique | y |
 |2.2: project/software name free from trademark violations | y |
 |3.1: software available as a package that can be deployed without building it | n/a |
@@ -52,17 +52,17 @@ but nevertheless, here is a track record that everyone is contributing a lot)| G
 |3.3: source code publicly available to download, either as a downloadable bundle or via access to a source code repository | y |
 |3.4: software hosted in an established, third-party repository like GitHub | y |
 |4.1: documentation clearly available on your website or within your software | y |
-|4.2: a "quick start" guide, that provides a short overview of how to use your software with some basic examples of use | (y/n) evidence |
-|4.3: For  more extensive documentation, does this provide clear, step-by-step instructions on how to deploy and use your software | (y/n) evidence |
-|4.4: comprehensive guide to all your software’s commands, functions and options | (y/n) evidence |
+|4.2: a "quick start" guide, that provides a short overview of how to use your software with some basic examples of use | y |
+|4.3: For  more extensive documentation, does this provide clear, step-by-step instructions on how to deploy and use your software | y |
+|4.4: comprehensive guide to all your software’s commands, functions and options | y |
 |4.5: troubleshooting information that describes the symptoms and step-by-step solutions for problems and error messages | (y/n) evidence |
 |4.6: provide comprehensive API documentation | (y/n) evidence |
 |4.7: documentation under revision control with your source code | y |
 |4.8: publish your release history e.g. release data, version numbers, key features of each release etc. on your web site or in your documentation | y |
-|5.1: software describe how a user can get help with using your software | (y/n) evidence |
-|5.2: documentation describe what support, if any, you provide to users and developers| (y/n) evidence |
-|5.3: project have an e-mail address or forum that is solely for supporting users | (y/n) evidence |
-|5.4: e-mails to your support e-mail address received by more than one person | (y/n) evidence |
+|5.1: software describe how a user can get help with using your software | y |
+|5.2: documentation describe what support, if any, you provide to users and developers| y |
+|5.3: project have an e-mail address or forum that is solely for supporting users | n/a |
+|5.4: e-mails to your support e-mail address received by more than one person | n/a |
 |5.5: have a ticketing system to manage bug reports and feature requests | y |
 |5.6: project's ticketing system publicly visible to your users, so they can view bug reports and feature requests | y |
 |6.1:  software’s architecture and design modular | y |
@@ -77,9 +77,9 @@ but nevertheless, here is a track record that everyone is contributing a lot)| G
 |10.3: releases tagged in the repository | y |
 |10.4: a branch of the repository that is always stable | y |
 |10.5: back-up your repository | y |
-|11.1: publicly-available instructions for building your software from the source code | (y/n) evidence |
-|11.2: build, or package, your software using an automated tool (Make, CMake, etc.) | (y/n) evidence |
-|11.3: provide publicly-available instructions for deploying your software | (y/n) evidence |
+|11.1: publicly-available instructions for building your software from the source code | y |
+|11.2: build, or package, your software using an automated tool (Make, CMake, etc.) | n/a |
+|11.3: provide publicly-available instructions for deploying your software | y |
 |11.4: documentation list all third-party dependencies | y |
 |11.5: documentation list the version number for all third-party dependencies | y |
 |11.6: software list the web address, and licences for all third-party dependencies and say whether the dependencies are mandatory or optional | y |
@@ -109,6 +109,6 @@ but nevertheless, here is a track record that everyone is contributing a lot)| G
 |15.5: software released under an OSI-approved open-source licence | y |
 |15.6: each of your source code files include a licence header | y |
 |15.7: have a recommended citation for your software | y |
-|16.1: website or documentation include a project roadmap (a list of project and development milestones for the next 3, 6 and 12 months) | (y/n) evidence |
+|16.1: website or documentation include a project roadmap (a list of project and development milestones for the next 3, 6 and 12 months) | y |
 |16.2: website or documentation describe how your project is funded, and the period over which funding is guaranteed | y |
 |16.3: make timely announcements of the deprecation of components, APIs, etc. | y |
