@@ -45,6 +45,7 @@ Outputs:
 
 Function: Normalize
 Description:   Normalize normalizes the data for a work and then populates its hash
+package: schema
 Inputs: 
   - work struct
 Outputs: 
@@ -52,6 +53,7 @@ Outputs:
 
 Function: Coalesce
 Description: Coalesce merges data with this work and another
+package: schema
 Inputs: 
   - work struct
 Outputs: 
@@ -59,6 +61,7 @@ Outputs:
 
 Function: New
 Description: New creates a new citation server
+package: server
 Inputs: 
   - empty
 Outputs: 
@@ -66,6 +69,7 @@ Outputs:
 
 Function: ListenAndServe
 Description: ListenAndServe starts the citation server on the given address
+package: server
 Inputs: 
   - address string
 Outputs: 
@@ -73,6 +77,7 @@ Outputs:
 
 Function: search
 Description: search handles an HTTP request to search for works
+package: server
 Inputs: 
   -  http.ResponseWriter
   - http.Request
@@ -81,6 +86,7 @@ Outputs:
 
 Function: format
 Description: format handles an HTTP request to format a work into a citation
+package: server
 Inputs: 
   -  http.ResponseWriter
   - http.Request
@@ -89,6 +95,7 @@ Outputs:
 
 Function: getAcmWorks
 Description: getAcmWorks parses the raw HTML from an ACM result page
+package: source
 Inputs: 
   -  goquery.Document
 Outputs: 
@@ -96,6 +103,7 @@ Outputs:
 
 Function: SourceSearchACM
 Description:  SourceSearchACM searches the ACM digital library for a work
+package: source
 Inputs: 
   -  work struct
 Outputs: 
@@ -104,6 +112,7 @@ Outputs:
 
 Function: SourceSearchCrossRef
 Description:  SourceSearchCrossRef searches CrossRef for works
+package: source
 Inputs: 
   -  work struct
 Outputs: 
@@ -112,6 +121,7 @@ Outputs:
 
 Function: New 
 Description:  New constructs a new database
+package: db
 Inputs: 
   -  work struct
 Outputs: 
@@ -121,6 +131,7 @@ Outputs:
 
 Function:  ExactSearch
 Description:  ExactSearch searches the work in the database
+package: db
 Inputs: 
   -  work struct
 Outputs: 
@@ -130,6 +141,7 @@ Outputs:
 
 Function:  GetWorkById
 Description:  Fetech the work from the database using hex id generated
+package: db
 Inputs: 
   -  id string
 Outputs: 
@@ -138,6 +150,7 @@ Outputs:
 
 Function:  SearchSources
 Description:  SearchSources searches the database or search sources for a given work
+package: db
 Inputs: 
   -  id string
 Outputs: 
