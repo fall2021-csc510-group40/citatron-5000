@@ -6,6 +6,8 @@ services:
     command: -p 8899 -c /config.json
     volumes:
     - ./core/config.json:/config.json
+    depends_on:
+      - mongo
 
   bot:
     build: telegram-bot
