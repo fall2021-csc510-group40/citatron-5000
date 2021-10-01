@@ -55,7 +55,7 @@ but nevertheless, here is a track record that everyone is contributing a lot)| G
 |4.2: a "quick start" guide, that provides a short overview of how to use your software with some basic examples of use | y |
 |4.3: For  more extensive documentation, does this provide clear, step-by-step instructions on how to deploy and use your software | y |
 |4.4: comprehensive guide to all your software’s commands, functions and options | y |
-|4.5: troubleshooting information that describes the symptoms and step-by-step solutions for problems and error messages | (y/n) evidence |
+|4.5: troubleshooting information that describes the symptoms and step-by-step solutions for problems and error messages | y |
 |4.6: provide comprehensive API documentation | y |
 |4.7: documentation under revision control with your source code | y |
 |4.8: publish your release history e.g. release data, version numbers, key features of each release etc. on your web site or in your documentation | y |
