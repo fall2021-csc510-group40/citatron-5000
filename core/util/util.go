@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// Package util provides several functions for convenient string-manipulation
+// Package util provides several functions for convenient string-manipulation as well as other convenient constants, types and functions.
 package util
 
 import (
