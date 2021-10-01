@@ -1,3 +1,4 @@
+# Citatron 5000
 
 [![GitHub license](https://img.shields.io/github/license/fall2021-csc510-group40/citatron-5000)](https://github.com/fall2021-csc510-group40/citatron-5000/blob/main/LICENSE)
 [![Build Status](https://app.travis-ci.com/fall2021-csc510-group40/citatron-5000.svg?branch=main)](https://app.travis-ci.com/fall2021-csc510-group40/citatron-5000)
@@ -9,8 +10,6 @@
 <img src="https://user-images.githubusercontent.com/43625082/135329921-51eeb5d9-b077-4a65-b130-bb4f7c327e53.png" alt="Citatron Logo" style="width:700px;"/>
 </p>
 
-# About the Citatron 5000 Project
-
 The Citatron 5000 Project seeks an easier and quicker way to grab paper citations for your projects. It was created for people frustrated with inaccurate, slow, and ad-ridden citation services. The project currently includes an API which searches for the input paper name across multiple data sources including the ACM site, the CrossRef database, and the Citatron 5000 database and returns the cited paper in either plain text IEEE or Bibtex format. This API can be integrated with different extensions/services and is currently used with a telegram bot to demonstrate its functionality.
   
 Click on the image below to learn more information about the Citatron Project:
@@ -19,26 +18,65 @@ Click on the image below to learn more information about the Citatron Project:
 
 Or follow [this link to the site](https://fall2021-csc510-group40.github.io/citatron-5000/).
 
-# Project Structure
+## Project Structure
 
-## Core
+### Core
 
 The `/core` holds all of the backend of the Citatron 5000 API. This includes the database, formatter, schema, server, source searchers, and util folders.
 
-## Citration 5000 Telegram Bot
+### Citration 5000 Telegram Bot
 
-The `/telegram-bot` holds a simple Telegram bot as a front-end for the API.
+The `/telegram-bot` holds a simple Telegram bot as a front-end for the API. The bot allows users to quickly cite a paper by name in either plain text IEEE or Bibtex format. 
+Simply send the title of the paper you are looking to cite, select the specific paper that you were looking for using the provided buttons, then choose the format, and enjoy
+the citation.
 
-### Bot Usage
+## Deployment
 
-The Citatron 5000 Bot is a telegram bot which allows users to quickly cite a paper by name in either plain text IEEE or Bibtex format. Simply send the name of the paper you are looking to cite and choose one of the two formatting options and the Citatron will return a list of 5 citations for papers which most closely match the input name.
+Currently, the core with the API and the bot are deployed together using the provided docker-compose config.
 
-### Bot Installation
+To deploy the service, you need to first clone the repository to a location of your choice:
+```bash
+$ git clone git@github.com:fall2021-csc510-group40/citatron-5000.git
+$ cd citatron-5000
+```
 
-1. Clone the Citatron 5000 Repository: `git clone git@github.com:fall2021-csc510-group40/citatron-5000.git`
-2. Change the working directory to Citatron 5000: `cd citatron-5000`
-2. Build and deploy: `docker-compose up --build`
-3. **ADD CONFIG INFO HERE**
+After that, you need to configure the components. There are several points of configuration that allow for easy deployment with default values
+as well as more fine-tuning if you wish to deploy the components manually:
+
+* `mongo-init.js`: here you can change the database setup, in particular, the user configs, including the user for the core service
+* `core/config.json`: that config is currently responsible for the database connection, timeouts associated with the search as well as log level for the search part of the service
+* `telegram-bot/config.json`: this file is used to configure the bot, allowing to change the token, update the available formatting options and change the log level
+    - to get the token for the bot, talk to the @BotFather in Telegram
+* `docker-compose.yml`:
+
+#### Configuring the docker-compose.yml
+
+Main points of configuration for the easy deployment option are in the database section, allowing to set the login and password for the mongo-express:
+```yaml
+mongo-express:
+    # ...
+    environment:
+        # ...
+        ME_CONFIG_BASICAUTH_USERNAME: <YOUR_USERNAME>
+        ME_CONFIG_BASICAUTH_PASSWORD: <YOUR_PASSWORD>
+```
+
+By default, these options are absent, allowing anyone to access the database admin panel.
+
+If you wish to expose your components to the outside world, you will definitely have to update default root password as well and potentially setup nginx to aid you
+in your deployment.
+
+---
+
+Finally, after the configuration is done, you can start your setup:
+```bash
+$ docker-compose up --build -d
+```
+
+And to access its logs:
+```bash
+$ docker-compose logs -f
+```
 
 ## Tests
 
