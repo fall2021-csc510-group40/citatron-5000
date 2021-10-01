@@ -24,7 +24,6 @@ services:
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - mongo_data:/data/db
-      - ../crossref_dump/converted:/crossref_dump:ro
 
   mongo-express:
     image: mongo-express

@@ -1,8 +1,8 @@
 {
     "database": {
         "uri": "mongodb://mongo:27017",
-        "username": "MONGODB_USERNAME",
-        "password": "MONGODB_PASSWORD",
+        "username": "core",
+        "password": "password",
         "database": "citeman",
         "source_timeout": "5s",
         "database_timeout": "5s",
