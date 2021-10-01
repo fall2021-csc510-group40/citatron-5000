@@ -32,7 +32,11 @@ the citation.
 
 ## Deployment
 
-Currently, the core with the API and the bot are deployed together using the provided docker-compose config.
+Currently, the core with the API and the bot are deployed together using the provided docker-compose config. To deploy them, you will need to have Docker and docker-compose on your machine:
+```bash
+sudo apt update
+sudo apt install docker docker-compose
+```
 
 To deploy the service, you need to first clone the repository to a location of your choice:
 ```bash
