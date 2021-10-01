@@ -56,7 +56,7 @@ but nevertheless, here is a track record that everyone is contributing a lot)| G
 |4.3: For  more extensive documentation, does this provide clear, step-by-step instructions on how to deploy and use your software | y |
 |4.4: comprehensive guide to all your software’s commands, functions and options | y |
 |4.5: troubleshooting information that describes the symptoms and step-by-step solutions for problems and error messages | (y/n) evidence |
-|4.6: provide comprehensive API documentation | (y/n) evidence |
+|4.6: provide comprehensive API documentation | y |
 |4.7: documentation under revision control with your source code | y |
 |4.8: publish your release history e.g. release data, version numbers, key features of each release etc. on your web site or in your documentation | y |
 |5.1: software describe how a user can get help with using your software | y |
@@ -73,7 +73,7 @@ but nevertheless, here is a track record that everyone is contributing a lot)| G
 |9.1: software adhere to appropriate accessibility conventions or standards | y |
 |9.2: documentation adhere to appropriate accessibility conventions or standards | y |
 |10.1: source code stored in a repository under revision control | y |
-|10.2: source code release a snapshot of the repository | (y/n) evidence |
+|10.2: source code release a snapshot of the repository | y |
 |10.3: releases tagged in the repository | y |
 |10.4: a branch of the repository that is always stable | y |
 |10.5: back-up your repository | y |
