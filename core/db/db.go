@@ -302,8 +302,10 @@ func (d *Database) rewriteMultipleWorks(ctx context.Context, works []*schema.Wor
 	return nil
 }
 
-// Search looks for the documents in external sources and updates the database accordingly. The returned works
-// are the works found in the database after the update
+// Search looks for the documents in external sources and updates the database accordingly.
+// If an exact match exists in the database, all the works matching all the fields in the request are returned.
+// Otherwise, the external search is performed first, and the results are uploaded to the database. Then the text search
+// is performed using the database's build-in index and the results are returned to the user.
 func (d *Database) Search(ctx context.Context, work *schema.Work) (works []*schema.Work, err error) {
 	logger := d.logger
 	if req_id := ctx.Value("req_id"); req_id != nil {
